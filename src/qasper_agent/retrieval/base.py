@@ -71,6 +71,7 @@ class Scorer(Protocol):
         """Return one score per candidate.
 
         ``candidates`` are positions in the ``units`` list given to ``fit``.
+        A score of exactly 0 means "no match": fusion gives it no credit.
         """
         ...
 

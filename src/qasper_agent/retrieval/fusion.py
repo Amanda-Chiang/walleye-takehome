@@ -10,7 +10,12 @@ class ReciprocalRankFusion:
 
     Uses ranks, not raw scores, so scorers on different scales (BM25 and
     cosine similarity) combine without tuning. With one scorer it keeps that
-    scorer's order. Ties keep the earlier unit first.
+    scorer's order.
+
+    A score of exactly 0 means the scorer found no match (e.g. BM25 with no
+    query term), so it earns no credit. Otherwise every unmatched paragraph
+    would gain credit, more of it the earlier it appears in the paper.
+    Equal nonzero scores share the best rank of their group.
 
     Parameters
     ----------
@@ -25,7 +30,26 @@ class ReciprocalRankFusion:
         """Return the fused score of each unit."""
         fused = [0.0] * len(score_lists[0])
         for scores in score_lists:
-            order = sorted(range(len(scores)), key=lambda i: (-scores[i], i))
-            for rank, position in enumerate(order, start=1):
+            for position, rank in match_ranks(scores).items():
                 fused[position] += 1 / (self.k + rank)
         return fused
+
+
+def match_ranks(scores: list[float]) -> dict[int, int]:
+    """Return the 1-based rank of each unit with a nonzero score.
+
+    Equal scores share the best rank of their group. Units scoring exactly
+    0 are left out.
+    """
+    matched = sorted(
+        (i for i, score in enumerate(scores) if score != 0),
+        key=lambda i: -scores[i],
+    )
+    ranks: dict[int, int] = {}
+    for rank, position in enumerate(matched, start=1):
+        previous = matched[rank - 2] if rank > 1 else None
+        if previous is not None and scores[previous] == scores[position]:
+            ranks[position] = ranks[previous]
+        else:
+            ranks[position] = rank
+    return ranks

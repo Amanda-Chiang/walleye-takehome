@@ -50,8 +50,8 @@ per question
 | --- | --- | --- | --- |
 | Chunker | `split(paragraph) -> list[str]` | `chunkers:WholeParagraph` | `chunker` (default `WholeParagraph`) |
 | Text view | `render(paragraph, piece) -> str` | `views:RawText` | `view` (default `RawText`) |
-| Scorer | `fit(units)`, `score(query, candidates) -> list[float]` | `dense:DenseScorer` | `scorers` (list, required) |
-| Fusion | `fuse(score_lists) -> list[float]` | `fusion:ReciprocalRankFusion` | `fusion` (default RRF, `k` = 60) |
+| Scorer | `fit(units)`, `score(query, candidates) -> list[float]`; exactly 0 means no match | `dense:DenseScorer`, `bm25:BM25Scorer` | `scorers` (list, required) |
+| Fusion | `fuse(score_lists) -> list[float]` | `fusion:ReciprocalRankFusion` (no credit for a score of 0; equal scores share a rank) | `fusion` (default RRF, `k` = 60) |
 | Reranker | `rerank(question, passages) -> list[passage]` | none yet | `reranker` (optional), with `candidate_k` |
 
 Units always keep their `paragraph_id`, and the retriever returns the
@@ -107,6 +107,10 @@ the same `--index-dir`: only new text gets embedded.
 | `src/qasper_agent/retrieval/dense.py` | `DenseScorer` (embeddings, cosine similarity). Paragraph and question embeddings both go through the starter's cache, so reruns use identical vectors ([D14](decisions.md#d14-cache-question-embeddings-in-densescorer)) |
 | `src/qasper_agent/retrieval/fusion.py` | `ReciprocalRankFusion` |
 | `config/composed-dense.json` | The baseline built from composed parts; reference for retrieval experiments |
+| `config/composed-bm25.json` | BM25 only; no API calls |
+| `config/composed-hybrid.json` | BM25 + dense, reciprocal rank fusion. Differs from `composed-dense.json` only by the added BM25 scorer |
+| `src/qasper_agent/retrieval/bm25.py` | `BM25Scorer` (Okapi BM25, standard library) and its `tokenize` (lowercase, alphanumeric tokens, plural "s" dropped) |
+| `tests/test_bm25.py` | Tests for tokenizing, BM25 scoring, RRF without credit for non-matches, hybrid ranking, the paper filter, and top-k prefix consistency |
 | `tests/test_composed_retriever.py` | Tests for the parts, scope, `top_k`, chunk rollup, reranking, index-time caching, and parity with the starter retriever |
 | `data/eval-120/` | 120 dev questions (100 answerable, 20 unanswerable, 94 papers) and gold, made with `tools/prepare_data.py --count 120 --abstentions 20`. A superset of the shipped 20. Used for retrieval evaluation (D6). Gold is for scoring only |
 | `tools/retrieval_eval.py` | Retrieval-only evaluation for any retriever config: recall@5/10/20 (best reference per depth, as `score.py`), each question's top-20 ranking, and the paragraphs of its best-matching reference (chosen at recall@5) that the top 5 missed, with rank and section. Reads gold only after retrieval. No answer-model calls |
@@ -128,5 +132,5 @@ Starter files changed:
 
 ## Planned
 
-- `retrieval/bm25.py` (keyword scorer) and a section-title view, the first
-  experiments from EXPERIMENTS.md entry 001.
+- A section-title view (D9), as a controlled experiment against the
+  raw-text configs.

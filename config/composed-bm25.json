@@ -1,0 +1,35 @@
+{
+  "top_k": 5,
+  "retriever": {
+    "class": "qasper_agent.retrieval.composed:ComposedRetriever",
+    "chunker": {
+      "class": "qasper_agent.retrieval.chunkers:WholeParagraph"
+    },
+    "view": {
+      "class": "qasper_agent.retrieval.views:RawText"
+    },
+    "scorers": [
+      {
+        "class": "qasper_agent.retrieval.bm25:BM25Scorer",
+        "k1": 1.5,
+        "b": 0.75
+      }
+    ],
+    "fusion": {
+      "class": "qasper_agent.retrieval.fusion:ReciprocalRankFusion",
+      "k": 60
+    }
+  },
+  "generator": {
+    "temperature": 0,
+    "max_tokens": 4096,
+    "attempts": 3,
+    "timeout_s": 60,
+    "model": "openai/gpt-6-luna",
+    "base_url": "https://openrouter.ai/api/v1",
+    "reasoning": {
+      "effort": "none"
+    },
+    "structured_output": true
+  }
+}
