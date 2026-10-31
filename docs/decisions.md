@@ -231,7 +231,15 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 
 ## D9: Add section-title context to indexed text only if it helps recall
 
-- **Status:** Accepted as a gate, 2026-10-31. Not built.
+- **Status:** Measured 2026-10-31 (EXPERIMENTS.md 004): **not adopted.**
+  `SectionPrefixed` is built and kept as an option, but the default configs
+  stay on raw text. With each scorer the view helped about as many
+  questions as it hurt (BM25 3 vs 3, dense 9 vs 8, hybrid 7 vs 6), and
+  recall@5 moved by at most +0.01. It fixed the targeted misses ("What
+  baseline is used?", "surface-level features"), but a section title is
+  shared by every paragraph in the section, so a matching title also lifts
+  that section's other paragraphs and pushes evidence elsewhere down.
+  LLM-written context (the alternative below) is not pursued for now.
 - **Decision:** Test a contextual text view that puts the section path in
   front of each paragraph before it is indexed (e.g. "Baseline Approaches:
   We compare our approach to two other…"), and keep it only if recall

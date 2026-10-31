@@ -133,3 +133,6 @@ Starter files changed:
 
 ## Planned
 
+- Stopword removal for BM25 queries, the first candidate from
+  EXPERIMENTS.md 003 (weak function-word matches cause most hybrid losses).
+

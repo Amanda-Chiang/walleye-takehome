@@ -370,3 +370,62 @@ BM25 queries, so weak matches on function words stop earning top ranks.
 It is not part of this iteration; it is the first candidate for the next
 one, measured the same way. Section context (Task 5) is still the
 planned controlled experiment for the section-title misses.
+
+---
+
+## 004: Section-title context (controlled experiment, D9)
+
+- **Date:** 2026-10-31
+- **Commit:** `4bd4068` (`SectionPrefixed` view and three section configs)
+- **Change tested:** the indexed text of each paragraph becomes
+  "section path + newline + paragraph" (e.g. "Baseline Approaches\nWe
+  compare our approach to two other…"). Each section config differs from
+  its raw-text config only in `view` (checked with `git diff --no-index`).
+- **Data and index:** `data/eval-120` (100 answerable), `.index-full`. The
+  section text was embedded once (15,757 paragraphs, 4 min, about $0.02);
+  hybrid-section reused those vectors. The folder still holds only
+  `paragraphs.jsonl` and `embedding-cache.sqlite`.
+- **Command:** `python tools/retrieval_eval.py --config config/composed-{bm25,dense,hybrid}-section.json --index-dir .index-full --questions data/eval-120/dev_questions.jsonl --gold data/eval-120/dev_gold.jsonl --output experiments/runs/004-{…}-section.json`
+- **Results:** [004-bm25-section.json](experiments/runs/004-bm25-section.json), [004-dense-section.json](experiments/runs/004-dense-section.json), [004-hybrid-section.json](experiments/runs/004-hybrid-section.json)
+
+### Metrics (raw text → section view)
+
+| Scorer | recall@5 | recall@10 | recall@20 | Better / worse at recall@5 | Sign test p |
+| --- | --- | --- | --- | --- | ---: |
+| BM25 | 0.54 → 0.54 | 0.70 → 0.71 | 0.86 → 0.89 | 3 / 3 | 1.00 |
+| Dense | 0.59 → 0.60 | 0.79 → 0.78 | 0.91 → 0.92 | 9 / 8 | 1.00 |
+| Hybrid | 0.65 → 0.66 | 0.79 → 0.80 | 0.92 → 0.94 | 7 / 6 | 1.00 |
+
+### Failures read (all 17 losses)
+
+**Wins** include the cases the view targeted: "What baseline is used?"
+(evidence under "Baseline Approaches") improves with every scorer, and
+"what surface-level features are used?" and "How do the backoff
+strategies work?" improve with dense.
+
+**Losses** follow two patterns:
+- **A matching title lifts the whole section.** Every paragraph in a
+  section gets the same prefix, so when the title matches the question,
+  all its paragraphs rise together and push the evidence elsewhere down.
+  "How do they match annotators to instances?": the evidence is under
+  "Routing To Experts or Crowd" and drops to rank 9–11, below paragraphs
+  under "Involving Expert Annotators".
+- **Evidence in generically named sections.** In 7 losses the evidence
+  sits under "Introduction" or a long paper-specific title that shares
+  nothing with the question, while other paragraphs gain from titles such
+  as "Abstract", "Dataset description" or "Results and Discussion".
+  "How many tweets are in the dataset?": the evidence (Introduction) drops
+  to rank 6 behind the Abstract.
+
+### Conclusion
+
+No net effect: each scorer gains and loses about the same number of
+questions, and recall@5 changes by at most +0.01, within what one
+question moves. The view does what it was designed to do for its target
+cases, but the same mechanism costs other questions. **D9: not adopted.**
+`SectionPrefixed` stays available for later combinations. Recall@20 rises
+slightly with the view (hybrid 0.92 → 0.94), which only matters if a
+reranker is ever tested (D7).
+
+**Best configuration so far: raw-text hybrid** (003; recall@5 0.65,
+@10 0.79, @20 0.92).
