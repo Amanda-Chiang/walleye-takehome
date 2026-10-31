@@ -49,7 +49,7 @@ per question
 | Part | Interface (`retrieval/base.py`) | Implementations | Config key |
 | --- | --- | --- | --- |
 | Chunker | `split(paragraph) -> list[str]` | `chunkers:WholeParagraph` | `chunker` (default `WholeParagraph`) |
-| Text view | `render(paragraph, piece) -> str` | `views:RawText` | `view` (default `RawText`) |
+| Text view | `render(paragraph, piece) -> str` | `views:RawText`, `views:SectionPrefixed` | `view` (default `RawText`) |
 | Scorer | `fit(units)`, `score(query, candidates) -> list[float]`; exactly 0 means no match | `dense:DenseScorer`, `bm25:BM25Scorer` | `scorers` (list, required) |
 | Fusion | `fuse(score_lists) -> list[float]` | `fusion:ReciprocalRankFusion` (no credit for a score of 0; equal scores share a rank) | `fusion` (default RRF, `k` = 60) |
 | Reranker | `rerank(question, passages) -> list[passage]` | none yet | `reranker` (optional), with `candidate_k` |
@@ -108,6 +108,7 @@ the same `--index-dir`: only new text gets embedded.
 | `src/qasper_agent/retrieval/fusion.py` | `ReciprocalRankFusion` |
 | `config/composed-dense.json` | The baseline built from composed parts; reference for retrieval experiments |
 | `config/composed-bm25.json` | BM25 only; no API calls |
+| `config/composed-dense-section.json`, `composed-bm25-section.json`, `composed-hybrid-section.json` | The dense, BM25 and hybrid configs with the section-title view; each differs from its raw-text config only in `view` (D9) |
 | `config/composed-hybrid.json` | BM25 + dense, reciprocal rank fusion. Differs from `composed-dense.json` only by the added BM25 scorer |
 | `src/qasper_agent/retrieval/bm25.py` | `BM25Scorer` (Okapi BM25, standard library) and its `tokenize` (lowercase, alphanumeric tokens, plural "s" dropped) |
 | `tests/test_bm25.py` | Tests for tokenizing, BM25 scoring, RRF without credit for non-matches, hybrid ranking, the paper filter, and top-k prefix consistency |
@@ -132,5 +133,3 @@ Starter files changed:
 
 ## Planned
 
-- A section-title view (D9), as a controlled experiment against the
-  raw-text configs.

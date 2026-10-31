@@ -10,6 +10,7 @@ from qasper_agent.retrieval.base import Unit
 from qasper_agent.retrieval.dense import DenseScorer
 from qasper_agent.retrieval.composed import ComposedRetriever, best_paragraphs
 from qasper_agent.retrieval.fusion import ReciprocalRankFusion
+from qasper_agent.retrieval.views import SectionPrefixed
 from qasper_rag.commands.index import build_index
 from qasper_rag.config import ConfigurationError
 from qasper_rag.pipeline.retrieval import EmbeddingRetriever
@@ -148,6 +149,32 @@ class DenseQueryCacheTests(unittest.TestCase):
             self.assertEqual(embed.call_count, calls_after_fit + 1)
             scorer.score("another question", [0, 1])
             self.assertEqual(embed.call_count, calls_after_fit + 2)
+
+
+class SectionViewTests(unittest.TestCase):
+    def test_puts_the_section_path_before_the_text(self):
+        paragraph = {"section": "Results ::: Parsing", "text": "LAS is 80."}
+        self.assertEqual(SectionPrefixed({}).render(paragraph, "LAS is 80."),
+                         "Results > Parsing\nLAS is 80.")
+
+    def test_empty_section_leaves_the_text_unchanged(self):
+        self.assertEqual(SectionPrefixed({}).render({"section": "", "text": "t"}, "t"), "t")
+
+    def test_section_words_become_searchable(self):
+        # EXPERIMENTS.md 001/002: the evidence never says "baseline"; its section does.
+        paragraphs = [
+            {"paragraph_id": "x:p00000", "paper_id": "x", "section": "Introduction",
+             "text": "We study emotion detection and compare our approach to others."},
+            {"paragraph_id": "x:p00001", "paper_id": "x", "section": "Baseline Approaches",
+             "text": "We compare our approach to two other systems."},
+        ]
+        bm25 = [{"class": "qasper_agent.retrieval.bm25:BM25Scorer"}]
+        view = {"class": "qasper_agent.retrieval.views:SectionPrefixed"}
+        question = {"question": "What baseline is used?", "paper_ids": ["x"]}
+        raw = ComposedRetriever(paragraphs, {"scorers": bm25}, "unused")
+        section = ComposedRetriever(paragraphs, {"scorers": bm25, "view": view}, "unused")
+        self.assertEqual(raw.retrieve(question, 1)[0]["paragraph_id"], "x:p00000")
+        self.assertIs(section.retrieve(question, 1)[0], paragraphs[1])
 
 
 class BaselineParityTests(unittest.TestCase):
