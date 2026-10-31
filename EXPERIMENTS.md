@@ -287,3 +287,86 @@ worth watching in the BM25 and hybrid results.
 (003) are compared against 002b, and hybrid reuses the same cached
 question vectors, so any difference comes from the change in scoring, not
 from embedding noise. The failure reading in 002 still applies.
+
+---
+
+## 003: BM25 and hybrid (BM25 + dense) against the dense reference
+
+- **Date:** 2026-10-31
+- **Commit:** `a7cfe7b` (BM25 scorer; RRF gives no credit to a score of 0)
+- **Configs:** `config/composed-bm25.json` (BM25 alone, k1 1.5, b 0.75) and
+  `config/composed-hybrid.json` (dense config plus BM25, RRF k 60; nothing
+  else changed). Reference: 002b.
+- **Data and index:** `data/eval-120` (100 answerable), `.index-full`.
+  Indexing both configs left the folder's file list unchanged; hybrid
+  reused the cached paragraph and question vectors (1.5 s, no new
+  embeddings), so dense and hybrid score identical question vectors.
+- **Commands:** `qasper-rag index … --config config/composed-{bm25,hybrid}.json --index-dir .index-full`, then
+  `python tools/retrieval_eval.py --config config/composed-{bm25,hybrid}.json --index-dir .index-full --questions data/eval-120/dev_questions.jsonl --gold data/eval-120/dev_gold.jsonl --output experiments/runs/003-{bm25,hybrid}.json`
+- **Results:** [003-bm25.json](experiments/runs/003-bm25.json), [003-hybrid.json](experiments/runs/003-hybrid.json)
+
+### Metrics
+
+| Config | recall@5 | recall@10 | recall@20 | recall@5 = 0 | Missed at 6–10 / 11–20 / below 20 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Dense (002b) | 0.59 | 0.79 | 0.91 | 34 | 25 / 17 / 26 |
+| BM25 | 0.54 | 0.70 | 0.86 | 41 | 22 / 20 / 33 |
+| **Hybrid** | **0.65** | 0.79 | 0.92 | 28 | 17 / 22 / 23 |
+
+| Per question at recall@5 | Better | Worse | Same |
+| --- | ---: | ---: | ---: |
+| BM25 vs dense | 13 | 21 | 66 |
+| Hybrid vs dense | 15 | 9 | 76 |
+| Hybrid vs BM25 | 17 | 3 | 80 |
+
+- Hybrid is never worse than both single scorers (0 questions).
+- Top-k prefix consistency on real data: 120 of 120 for both configs.
+- **Strength of the evidence:** hybrid's +0.06 recall@5 over dense comes
+  from 15 wins against 9 losses. An exact two-sided sign test on those 24
+  gives p = 0.31, so on 100 questions the gain is suggestive, not
+  conclusive. Recall@10 and @20 barely move: hybrid mostly reorders the
+  top of the ranking.
+
+### Failures read
+
+**Wins (15):** they include the "exact word" misses from 002, e.g. "What
+baselines are used for comparison?" ("Our baseline is TransE"), "what
+surface-level features are used?", "What metrics are used for
+evaluation?", and two questions dense ranked at 7 and 9 ("How much
+training data from the non-English language…", "which non-English
+language had the worst results").
+
+**Losses (all 9 read).** In each, dense had the evidence in its top 5
+(ranks 1–5) and hybrid pushed it to 6–13, or out of the top 20. The cause
+is the same in most of them: BM25's first choice is a paragraph that
+shares only common words with the question, and RRF counts a weak rank-1
+match exactly like a strong one.
+
+| Question | Words BM25's top paragraph matched |
+| --- | --- |
+| did they collect their own data? | data, their, they (an Acknowledgments paragraph) |
+| What is the architecture of the model? | is, model, of, the, what |
+| what dataset is used? | is, what |
+| What is the best performing model? | best, is, model (a table caption) |
+| Does the experiments focus on a specific domain? | a, domain, focus, on, the |
+
+In 5 of 9 losses BM25's top paragraph matched at most one content word.
+The tokenizer keeps function words ("the", "is", "they"), and short
+yes/no or generic questions consist mostly of them. One loss ("What are
+the baselines?") is the list-items pattern from 002: four sibling
+paragraphs under "Evaluation", one baseline each.
+
+The tokenizer's plural rule also clips non-plurals ("does" → "doe",
+"this" → "thi", "focus" → "focu"). It is applied the same way to
+questions and paragraphs, so matching still works; it is cosmetic.
+
+### Conclusion and next step
+
+Hybrid is the best configuration measured so far (recall@5 0.65 vs 0.59
+for dense) and is never worse than both single scorers, but the
+advantage rests on 24 questions that differ and is not statistically
+firm. The losses point to one specific, cheap fix: removing stopwords from
+BM25 queries, so weak matches on function words stop earning top ranks.
+It is not part of this iteration; it is the first candidate for the next
+one, measured the same way. Section context (Task 5) is still the
+planned controlled experiment for the section-title misses.
