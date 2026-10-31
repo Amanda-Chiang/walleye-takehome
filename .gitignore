@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+.index/
+.index-*/
+results/
+dist/
+# Maintainer downloads: candidate distribution includes curated data only.
+data/qasper-*.json
+data/qasper_evaluator.py
+data/*.tgz
+data/train/
+data/dev/
+data/test/
+
+# Local environments and build output
+*.egg-info/
