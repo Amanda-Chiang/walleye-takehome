@@ -255,3 +255,35 @@ experiment. The "list items" pattern is the strongest argument seen so far
 for some form of section-aware expansion (D10), but it is out of scope for
 this iteration and is recorded here for later. Captions outranking text is
 worth watching in the BM25 and hybrid results.
+
+---
+
+## 002b: Dense baseline with cached question embeddings (new reference)
+
+- **Date:** 2026-10-31
+- **Commit:** `bfbbd54` (D14: `DenseScorer` caches question embeddings)
+- **Config, data, index:** as 002 (`config/composed-dense.json`,
+  `data/eval-120`, `.index-full`).
+- **Command:** the 002 evaluation command, run twice, writing
+  `experiments/runs/002b-dense-cached.json`.
+- **Results:** [experiments/runs/002b-dense-cached.json](experiments/runs/002b-dense-cached.json)
+
+| Metric | 002 (uncached) | 002b (cached) |
+| --- | ---: | ---: |
+| recall@5 | 0.59 | 0.59 |
+| recall@10 | 0.79 | 0.79 |
+| recall@20 | 0.91 | 0.91 |
+
+**Checks:**
+- The two 002b runs produced byte-identical result files: reruns are now
+  exactly repeatable.
+- Prefix consistency on real data is 120 of 120 (002: 119 of 120).
+- The top 5 differs from 002 on 0 of 100 answerable questions, and
+  matches run 001 on 20 of 20 shipped questions. The question vectors
+  cached by the first run happened to give the same rankings as 002; with
+  another sample, up to about one question could have differed.
+
+**Conclusion:** 002b replaces 002 as the dense reference. BM25 and hybrid
+(003) are compared against 002b, and hybrid reuses the same cached
+question vectors, so any difference comes from the change in scoring, not
+from embedding noise. The failure reading in 002 still applies.
