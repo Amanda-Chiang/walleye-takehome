@@ -221,3 +221,86 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 - **Open questions:** query rewriting versus searching for missing aspects;
   whether the sufficiency check and the answer can share one model call;
   how the loop behaves in all-papers mode.
+
+## D9: Add section-title context to indexed text only if it helps recall
+
+- **Status:** Accepted as a gate, 2026-10-31. Not built.
+- **Decision:** Test a contextual text view that puts the section path in
+  front of each paragraph before it is indexed (e.g. "Baseline Approaches:
+  We compare our approach to two other…"), and keep it only if recall
+  improves on the D6 retrieval set. The paper title is left out for now: it
+  only helps in all-papers mode.
+- **Why:** The generator already sees each paragraph's section when it
+  answers, so context does not matter for citations. It matters for
+  *search*: some evidence paragraphs never use the question's words, and
+  their section title does. In run 001, Q13 ("What baseline is used?") had
+  evidence under "Baseline Approaches", and Q12 ("surface-level features")
+  under "Features.". That is 2 of 9 misses, a hypothesis rather than proof.
+- **Alternatives:** LLM-written context per paragraph (Anthropic's
+  Contextual Retrieval): richer, but about 15.7k LLM calls to index the
+  corpus. Only worth trying if the free, deterministic section prefix helps
+  and leaves a gap.
+- **Cost:** About 15 lines (a `TextView` class) and one re-index (well under
+  one cent of embeddings). BM25 picks it up with no extra cost.
+
+## D10: Choose the parent-child form from near-miss data
+
+- **Status:** Accepted as a method, 2026-10-31. Form not chosen yet.
+- **Decision:** The retrieval evaluation reports, for each gold paragraph
+  that retrieval missed, whether it was (a) in the same section as a
+  retrieved paragraph, (b) directly next to one, or (c) unrelated to
+  anything retrieved. The parent-child form follows the result:
+  - mostly (a): fill spare slots with section-mates of the top hit, the
+    whole section when it fits;
+  - mostly (b): add neighbouring paragraphs;
+  - mostly (c): parent-child will not help; work on scoring instead.
+- **Why:** The 5-paragraph limit makes every added context paragraph cost a
+  slot. Sections have a median of 2 paragraphs and 82% have at most 5, but
+  48% of paragraphs sit in sections with more than 5 (up to 74), so
+  "return the whole section" does not always fit. Whether a fixed
+  neighbour window is enough is unknown.
+- **Rejected:** Showing the model a whole section while reporting only 5
+  paragraph IDs. The contract defines `retrieved_paragraph_ids` as the
+  paragraphs searched, so the report would understate what the model read.
+
+## D11: Figures and tables: captions only, abstain on their contents
+
+- **Status:** Accepted, 2026-10-31. The prompt line is part of D12.
+- **Decision:** No extra code for figures and tables. The 1,929 captions
+  (section `Caption`, e.g. "Table 1: Main Results. …") stay searchable and
+  citable like any paragraph. The answer prompt says: if the answer depends
+  on a table's or figure's contents that only a caption describes, abstain.
+  The writeup states this limit.
+- **Why:** The corpus has captions but no table cells or images. In-text
+  references are placeholders (`TABREF17`) that cannot be matched to caption
+  numbers, so mentions cannot be linked to captions. The shipped dev sample
+  already excluded questions whose evidence is a figure or table.
+
+## D12: Fix abstention and answer length with a generator subclass
+
+- **Status:** Accepted, 2026-10-31. Not built.
+- **Decision:** A small `ChatGenerator` subclass with a revised prompt:
+  abstain instead of hedging; answer yes/no questions with only "Yes" or
+  "No" and keep other answers short; name paper IDs only when more than one
+  paper is in scope; and the figure/table rule from D11.
+- **Why:** Run 001: 4 of 5 unanswerable questions got hedged answers ("the
+  passages do not establish…") instead of abstentions, and the prompt's
+  "state which paper_id each claim comes from" made single-paper answers
+  wordy ("Yes. Paper 1705.01265 reports…" where the gold is "Yes"), which
+  lowers token F1 even when the answer is right.
+- **Measurement:** End-to-end runs on the 20 dev questions: abstention
+  precision and recall, coverage, token F1. Answers vary between runs at
+  temperature 0 (000 vs 001), so small changes need care.
+
+## D13: Hold off on query rewriting and HyDE
+
+- **Status:** Deferred, 2026-10-31
+- **Decision:** No query rewriting (an LLM expands the question before
+  search) and no HyDE (an LLM writes a hypothetical answer paragraph that is
+  embedded instead of the question) for now.
+- **Why:** Both target short, generic questions such as "What is the
+  baseline?", which BM25 (exact words) and section context (D9) also target,
+  at no per-query cost. Both add one LLM call (about 1–2 s) per question.
+- **Revisit if:** After BM25, hybrid and D9, misses remain on questions whose
+  wording differs from the paper's. Query rewriting is also a candidate
+  retry action for the agentic loop (D8).
