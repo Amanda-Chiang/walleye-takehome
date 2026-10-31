@@ -358,6 +358,7 @@ installed packages. A `my_rag/` folder in the project root works. A few rules ap
 - Return the passages unchanged, with their `paragraph_id`, `paper_id` and `text`. The service rejects changed text.
 - Return at most `top_k` passages, best first.
 - `qasper-rag index` embeds the corpus when the retriever settings have an `embedding` section. Without one, it only saves the corpus, so your retriever can build what it needs from `paragraphs`.
+- To build that at index time instead of at every load, give the retriever class a `prepare_index(paragraphs, settings, index_dir)` class method or static method. `qasper-rag index` calls it once after writing the index files, e.g. to embed chunks into a cache in `index_dir` that the retriever then reads when it loads.
 
 A class can wrap another one, e.g. a retriever that calls `EmbeddingRetriever`
 for 20 candidates and then reranks them. `tests/test_extension.py` has a small

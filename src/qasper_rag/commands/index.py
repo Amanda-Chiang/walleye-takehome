@@ -12,7 +12,8 @@ from pathlib import Path
 from typing import Any
 
 from qasper_rag.cli import run_cli
-from qasper_rag.config import load_config
+from qasper_rag.config import AppConfig, load_class, load_config
+from qasper_rag.pipeline.retrieval import EmbeddingRetriever
 from qasper_rag.providers.embeddings import EmbeddingClient, corpus_fingerprint
 from qasper_rag.storage.jsonl import read_jsonl, unique_by, write_jsonl
 
@@ -103,12 +104,14 @@ def build_index(
         The number of paragraphs indexed.
     """
     paragraphs = load_corpus(corpus_path)
-    embedding_config = load_config(config_path).embedding
+    config = load_config(config_path)
+    embedding_config = config.embedding
     target = Path(index_dir)
     target.mkdir(parents=True, exist_ok=True)
     if embedding_config is None:
         # A custom retriever without embeddings only needs the corpus.
         write_jsonl(target / "paragraphs.jsonl", paragraphs)
+        prepare_retriever(config, paragraphs, target)
         return len(paragraphs)
     embedder = EmbeddingClient(embedding_config)
     logger.info(
@@ -127,7 +130,36 @@ def build_index(
     for name in INDEX_FILES:
         (target / f"{name}.pending").replace(target / name)
     logger.info("Indexed %d paragraphs in %s", len(paragraphs), target)
+    prepare_retriever(config, paragraphs, target)
     return len(paragraphs)
+
+
+def prepare_retriever(
+    config: AppConfig, paragraphs: list[dict[str, Any]], index_dir: Path
+) -> None:
+    """Let a custom retriever build what it needs once, at index time.
+
+    A retriever class may define ``prepare_index(paragraphs, settings,
+    index_dir)``, e.g. to embed text the default index does not hold, such
+    as chunks or section titles. It runs after the index files are written,
+    so later loads by ``predict``, ``answer`` and ``serve`` can read its
+    cache instead of building at startup. Classes without it are unaffected.
+
+    Parameters
+    ----------
+    config : AppConfig
+        The checked settings.
+    paragraphs : list[dict]
+        The corpus paragraphs.
+    index_dir : Path
+        The index folder.
+    """
+    retriever_class = load_class(config.retriever, EmbeddingRetriever)
+    prepare_index = getattr(retriever_class, "prepare_index", None)
+    if prepare_index is None:
+        return
+    logger.info("Preparing %s for the index", retriever_class.__name__)
+    prepare_index(paragraphs, config.retriever, index_dir)
 
 
 def _write_pending(
