@@ -140,6 +140,23 @@ class BaselineParityTests(unittest.TestCase):
                         [p["paragraph_id"] for p in composed.retrieve(question, 3)],
                         [p["paragraph_id"] for p in baseline.retrieve(question, 3)])
 
+    def test_index_command_fills_the_cache_so_loading_embeds_nothing(self):
+        config = {"retriever": {"class": "qasper_agent.retrieval.composed:ComposedRetriever",
+                                "scorers": [{"class": "qasper_agent.retrieval.dense:DenseScorer",
+                                             "embedding": EMBEDDING}]},
+                  "generator": {}}
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, ENV), \
+                patch.object(EmbeddingClient, "embed", autospec=True,
+                             side_effect=fake_embed) as embed:
+            path = Path(tmp) / "config.json"
+            path.write_text(json.dumps(config))
+            build_index(CORPUS, tmp, path)
+            self.assertTrue((Path(tmp) / "embedding-cache.sqlite").exists())
+            calls_at_index = embed.call_count
+            ComposedRetriever(read_jsonl(CORPUS), config["retriever"], tmp)
+        self.assertGreater(calls_at_index, 0)
+        self.assertEqual(embed.call_count, calls_at_index)
+
     def test_composed_retriever_loads_through_the_starter_service(self):
         config = {"retriever": {"class": "qasper_agent.retrieval.composed:ComposedRetriever",
                                 "scorers": [{"class": "test_composed_retriever:KeywordScorer"}]},

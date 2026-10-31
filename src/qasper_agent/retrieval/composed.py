@@ -16,6 +16,9 @@ changed without touching the others::
 
 Only ``scorers`` is required. ``reranker`` is optional, and ``candidate_k``
 sets how many paragraphs it sees.
+
+``qasper-rag index`` calls ``prepare_index``, which fits every scorer once so
+their caches (e.g. embeddings) are built at index time, not at first load.
 """
 
 from __future__ import annotations
@@ -76,6 +79,29 @@ class ComposedRetriever:
         for position, unit in enumerate(self.units):
             self.units_by_paper[unit.paper_id].append(position)
         self.scorers = self._make_scorers(index_dir)
+
+    @classmethod
+    def prepare_index(
+        cls,
+        paragraphs: list[Passage],
+        settings: dict[str, Any],
+        index_dir: str | Path,
+    ) -> None:
+        """Build every part once so scorer caches are filled.
+
+        ``qasper-rag index`` calls this after writing the index files. Later
+        loads read the caches instead of embedding at startup.
+
+        Parameters
+        ----------
+        paragraphs : list[dict]
+            The corpus paragraphs.
+        settings : dict
+            The ``retriever`` settings.
+        index_dir : str or Path
+            The index folder.
+        """
+        cls(paragraphs, settings, index_dir)
 
     def _make_units(self) -> list[Unit]:
         return [
