@@ -1,4 +1,4 @@
-# Retrieval Evaluation, Dense Baseline, BM25 and Hybrid: Plan (Revision 2)
+# Retrieval Evaluation, Dense Baseline, BM25 and Hybrid: Plan (Revision 3, approved)
 
 **Execution:** one coding agent, inline, in small checkpoints. Stop at each
 checkpoint marked **Report** and show Amanda the result before continuing.
@@ -22,7 +22,7 @@ changes, the agentic loop, cross-paper questions, and the stashed
 | Near-miss counts over the union of all references | Missed paragraphs of the best-matching reference only | Matches the recall metric. Prevents counting a paragraph as "missed" when another accepted reference is fully retrieved |
 | Adjacent / same-section / unrelated classification drives D10 | Report rank and section of each missed paragraph; no relation categories | Sharing a 30-paragraph "Experiments" section, or being adjacent, does not show that expansion would help |
 | Hard thresholds decide D7, D9, D10 | Metrics plus manual reading; reranker headroom is necessary, not sufficient | Avoids committing to architecture because an arbitrary number was crossed |
-| RRF ranks tied scores by paragraph position | Tied scores share one rank | Paragraphs with no BM25 match would otherwise get credit for appearing early in the paper |
+| RRF ranks every candidate, ties by paragraph position | A score of exactly 0 (no match) earns no RRF credit; other tied scores share one rank | Paragraphs with no BM25 match would otherwise get credit, and more of it the earlier they appear in the paper |
 | Shared index folder over a 20-question subset corpus | Shared index folder `.index-full` over the full corpus, with isolation checked once (Task 3) | All composed configs use the same corpus; their only artifacts are an identical `paragraphs.jsonl` and an embedding cache keyed by model settings and text. No new infrastructure for isolation. The full index also serves the chat page |
 | Full code in the plan | Behavior, constraints and acceptance tests | The implementer writes the code |
 | Separate code and docs commits; every test and lint command logged | One cohesive commit per feature; log meaningful experiments only | Less overhead |
@@ -99,9 +99,12 @@ add the files to `docs/extensions.md`.
 - For each answerable question (any reference with `abstain: false`):
   - `recall@k` for k in 5, 10, 20: the best recall over references, the
     same definition `tools/score.py` uses for recall@5.
-  - **Best-matching reference:** the reference with the highest recall@5;
-    ties go to higher recall@20, then to the earliest reference. The same
-    rule applies at every depth, so diagnostics match the metric.
+  - Aggregate `recall@k` is maximized over references independently at
+    each depth, exactly as `score.py` does at depth 5, so recall@10 may use
+    a different reference than recall@5.
+  - **Best-matching reference** (diagnostics only): the reference with the
+    highest recall@5; ties go to higher recall@20, then to the earliest
+    reference. It is chosen once, at depth 5, the depth the answer uses.
   - `missed`: the best reference's evidence paragraphs that are not in the
     top 5, each with its 1-based `rank` in the top 20 (or `null`) and its
     `section`.
@@ -125,6 +128,11 @@ add the files to `docs/extensions.md`.
   recall@20; with equal recall at both depths, the first one.
 - Missed paragraphs report rank (6–20, or `null` beyond 20) and section.
 - Unanswerable questions are skipped.
+- Top-k prefix consistency: for `ComposedRetriever` (fake scorer) and the
+  starter's `EmbeddingRetriever` (fake embeddings),
+  `retrieve(q, 20)[:5] == retrieve(q, 5)`, so recall@5 measured from a
+  depth-20 retrieval equals what `predict` and `serve` return with
+  `top_k = 5`.
 - End to end on `tests/fixtures/` with a composed retriever and the fake
   `KeywordScorer` from `tests/test_composed_retriever.py`: writes JSON with
   `answerable_questions == 1` and `recall_at_5 == 1.0`.
@@ -156,7 +164,10 @@ the **full corpus** in the shared folder `.index-full` and evaluated on the
    paragraph embeddings, about $0.02, a few minutes).
 2. Run the evaluator on `data/eval-120`, writing
    `experiments/runs/002-dense.json`.
-3. Reproduction check on the shipped 20: compare each question's top 5 with
+3. Prefix check on real data: for the 120 questions,
+   `retrieve(q, 5) == retrieve(q, 20)[:5]` with this config (120 extra
+   question embeddings, a fraction of a cent).
+4. Reproduction check on the shipped 20: compare each question's top 5 with
    `retrieved_paragraph_ids` in `results/baseline-20/predictions.jsonl`
    (run 001). The 15 answerable ones should average recall@5 = 0.33.
 
@@ -198,11 +209,14 @@ recall@5/10/20, the reproduction result, and a short reading of at least
 - `tokenize(text)`: lowercase, split on non-alphanumerics, drop a plural
   "s" (not for words of 3 letters or fewer, nor words ending in "ss"), so
   "baselines" matches "baseline" (a run 001 miss).
-- **Tie-aware RRF:** `ReciprocalRankFusion` gives equal scores the same
-  rank, the best position of the tied group. Paragraphs that BM25 does not
-  match all share one rank, so their position in the paper earns them no
-  credit. Dense scores almost never tie, so dense-only rankings, and
-  therefore parity with the starter, are unchanged.
+- **RRF without credit for non-matches:** `ReciprocalRankFusion` gives no
+  credit to a score of exactly 0, which the `Scorer` protocol defines as
+  "no match". BM25 returns exactly 0 for a paragraph with no query term
+  (any match is positive, since IDF is always positive). Other equal
+  scores share one rank, the best position of the tied group. Dense cosine
+  scores are never exactly 0 or tied in practice, so dense-only rankings,
+  and parity with the starter, are unchanged. If no candidate matches any
+  scorer, every fused score is 0 and paragraphs keep their paper order.
 - `composed-bm25.json`: BM25 only (no API). `composed-hybrid.json`: BM25 +
   dense with RRF `k` = 60. Same generator section as `composed-dense.json`.
 
@@ -214,14 +228,19 @@ recall@5/10/20, the reproduction result, and a short reading of at least
   rare term outweighs a common one; a shorter unit beats a longer one with
   the same term count; scores come back for exactly the requested
   candidates.
-- RRF ties: `fuse([[0, 0, 0, 5]])` ranks unit 3 first and gives units 0–2
-  **equal** fused scores. Existing RRF tests still pass.
+- RRF non-matches: `fuse([[0, 0, 0, 5]])` gives units 0–2 a fused score
+  of exactly 0 and unit 3 a positive score. `fuse([[0, 2], [0.9, 0.1]])`
+  gives unit 0 credit only from the second list.
+- RRF ties: `fuse([[3, 3, 1]])` gives units 0 and 1 equal scores, above
+  unit 2. Existing RRF tests still pass.
 - Hybrid integration (fake dense scorer with fixed scores plus real BM25):
   a paragraph that dense ranks first and BM25 does not match is **not**
   pushed down by non-matching paragraphs that come earlier in the paper.
 - Paper filter: with two papers indexed, hybrid retrieval for paper A never
   returns paper B's paragraphs, even when B matches the query better.
 - The existing dense parity test still passes.
+- Top-k prefix consistency, as in Task 2, for BM25-only and hybrid
+  composed retrievers (with a fake dense scorer).
 
 **Experiment:**
 1. Index each config into `.index-full` (BM25 adds nothing to the folder;
@@ -229,7 +248,8 @@ recall@5/10/20, the reproduction result, and a short reading of at least
    Confirm the folder's file list is unchanged.
 2. Evaluate both on `data/eval-120`, writing `experiments/runs/003-bm25.json`
    and `003-hybrid.json`.
-3. Compare with 002: recall@5/10/20, plus per-question wins and losses at
+3. Prefix check on real data for both configs, as in Task 3.
+4. Compare with 002: recall@5/10/20, plus per-question wins and losses at
    recall@5 against dense. Read at least 10 failures of the best config and
    every question where hybrid is worse than both single scorers.
 
