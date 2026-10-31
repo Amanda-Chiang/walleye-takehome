@@ -1,0 +1,11 @@
+{
+  "source": "qasper-dev-v0.3.json",
+  "source_sha256": "2ae7ee62a65b1c4225791c70de80c2aad4e8998cf1fd4f09a53103db4f21af93",
+  "questions": 20,
+  "unanswerable": 5,
+  "paragraphs": 15757,
+  "papers": 281,
+  "excluded_questions": 319,
+  "selection": "SHA256(question_id), fixed answerability quotas; no performance selection",
+  "curation": "Unanimous answerability; all answerable annotations fully map to <=5 text paragraphs; no FLOAT SELECTED evidence. Duplicate text maps to first occurrence."
+}

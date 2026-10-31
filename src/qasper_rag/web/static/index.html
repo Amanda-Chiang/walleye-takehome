@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Research Across Papers · QASPER RAG</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f5f7;
+      --surface: #fff;
+      --surface-soft: #f7f8fa;
+      --ink: #1c2430;
+      --muted: #687386;
+      --line: #e4e7eb;
+      --accent: #315ee8;
+      --accent-dark: #264bc2;
+      --user: #eaf0ff;
+      --good: #146b48;
+      --warn: #9a4e0d;
+      --error-bg: #fff1ed;
+      --shadow: 0 18px 50px rgba(28, 36, 48, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #11151c;
+        --surface: #191f29;
+        --surface-soft: #202733;
+        --ink: #eef2f8;
+        --muted: #a1adbf;
+        --line: #313b49;
+        --accent: #89a5ff;
+        --accent-dark: #a6bbff;
+        --user: #263451;
+        --good: #81d6ab;
+        --warn: #ffc084;
+        --error-bg: #402923;
+        --shadow: 0 18px 50px rgba(0, 0, 0, .22);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page);
+      color: var(--ink);
+      font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, select { font: inherit; }
+    .shell { width: min(920px, calc(100% - 32px)); margin: 36px auto; }
+    .topline { display: flex; align-items: center; gap: 12px; margin: 0 0 18px 4px; }
+    .mark {
+      display: grid; place-items: center; width: 40px; height: 40px;
+      border-radius: 13px; background: var(--accent); color: white;
+      font-weight: 800; letter-spacing: -.06em;
+    }
+    .eyebrow { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+    h1 { margin: 1px 0 0; font-size: 21px; line-height: 1.2; letter-spacing: -.035em; }
+    .card {
+      min-height: min(790px, calc(100vh - 110px));
+      display: flex; flex-direction: column; overflow: hidden;
+      border: 1px solid var(--line); border-radius: 20px;
+      background: var(--surface); box-shadow: var(--shadow);
+    }
+    .toolbar { padding: 20px 24px 17px; border-bottom: 1px solid var(--line); }
+    .toolbar-row { display: flex; align-items: end; gap: 14px; }
+    .field { flex: 1; min-width: 0; }
+    label { display: block; margin: 0 0 7px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    select, input {
+      min-height: 45px; width: 100%; padding: 10px 13px;
+      border: 1px solid var(--line); border-radius: 11px;
+      outline: none; background: var(--surface); color: var(--ink);
+    }
+    select:focus, input:focus, button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 30%, transparent); outline-offset: 2px; }
+    select:disabled, input:disabled { opacity: .65; }
+    .new-chat {
+      min-height: 45px; padding: 0 15px; border: 1px solid var(--line);
+      border-radius: 11px; background: var(--surface-soft); color: var(--ink);
+      cursor: pointer; white-space: nowrap;
+    }
+    .privacy { margin: 12px 1px 0; color: var(--muted); font-size: 12px; }
+    .messages { flex: 1; min-height: 310px; max-height: 57vh; overflow-y: auto; padding: 25px 24px; scroll-behavior: smooth; }
+    .welcome { max-width: 590px; margin: 35px auto; text-align: center; }
+    .welcome-icon { display: grid; place-items: center; width: 58px; height: 58px; margin: auto auto 17px; border-radius: 18px; background: var(--surface-soft); font-size: 25px; }
+    .welcome h2 { margin: 0 0 9px; font-size: 21px; letter-spacing: -.035em; }
+    .welcome p { margin: 0; color: var(--muted); }
+    .suggestions { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .suggestion { padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-soft); color: var(--ink); cursor: pointer; font-size: 12px; }
+    .turn { display: flex; flex-direction: column; gap: 10px; margin: 0 auto 24px; max-width: 680px; }
+    .question { align-self: flex-end; max-width: min(86%, 550px); padding: 11px 15px; border-radius: 17px 17px 5px 17px; background: var(--user); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .answer-card { padding: 15px 17px; border: 1px solid var(--line); border-radius: 5px 17px 17px 17px; background: var(--surface-soft); }
+    .answer-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+    .dot.abstain { background: var(--warn); }
+    .answer { white-space: pre-wrap; overflow-wrap: anywhere; }
+    details { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 11px; }
+    summary { color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 700; }
+    .citation { margin-top: 10px; padding: 11px 12px; border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; background: var(--surface); }
+    .citation-id { color: var(--accent); font-size: 11px; font-weight: 750; overflow-wrap: anywhere; }
+    .quote { margin-top: 4px; font-size: 13px; white-space: pre-wrap; }
+    .retrieved { margin-top: 12px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+    .composer-wrap { padding: 15px 24px 19px; border-top: 1px solid var(--line); background: var(--surface); }
+    .composer { display: flex; align-items: end; gap: 10px; max-width: 680px; margin: auto; }
+    .composer input { min-height: 49px; padding: 13px 15px; }
+    .send {
+      display: grid; place-items: center; flex: 0 0 49px; width: 49px; height: 49px;
+      border: 0; border-radius: 14px; background: var(--accent); color: white; cursor: pointer;
+    }
+    .send:hover:not(:disabled) { background: var(--accent-dark); }
+    .send:disabled { opacity: .5; cursor: wait; }
+    .send svg { width: 19px; height: 19px; }
+    .hint { max-width: 680px; margin: 8px auto 0; color: var(--muted); font-size: 11px; }
+    .status { min-height: 20px; max-width: 680px; margin: 7px auto 0; color: var(--muted); font-size: 12px; }
+    .status.error { color: #bf3b25; }
+    @media (max-width: 620px) {
+      .shell { width: 100%; margin: 0; }
+      .topline { margin: 17px 16px 13px; }
+      .card { min-height: calc(100dvh - 73px); border-radius: 18px 18px 0 0; }
+      .toolbar { padding: 15px 15px 12px; }
+      .toolbar-row { align-items: end; gap: 8px; }
+      .new-chat { padding: 0 10px; font-size: 12px; }
+      .messages { max-height: none; padding: 19px 14px; }
+      .composer-wrap { padding: 12px 13px max(14px, env(safe-area-inset-bottom)); }
+    }
+    @media (prefers-reduced-motion: reduce) { .messages { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topline">
+      <div class="mark" aria-hidden="true">P</div>
+      <div><div class="eyebrow">QASPER · Evidence grounded research</div><h1>Research Across Papers</h1></div>
+    </header>
+    <section class="card" aria-label="Research paper chat">
+      <div class="toolbar">
+        <div class="toolbar-row">
+          <div class="field">
+            <label for="paper">Search scope</label>
+            <select id="paper" disabled><option>Loading papers…</option></select>
+          </div>
+          <button class="new-chat" id="newChat" type="button">New chat</button>
+        </div>
+        <p class="privacy">Questions and retrieved public paper text are sent to the model providers configured for this RAG agent.</p>
+      </div>
+      <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions text">
+        <div class="welcome" id="welcome">
+          <div class="welcome-icon" aria-hidden="true">⌕</div>
+          <h2>Ask across research papers</h2>
+          <p>Search the full collection or choose one paper. Ask about methods, datasets, experiments, results, or comparisons. Answers include the source passages.</p>
+          <div class="suggestions" aria-label="Example questions">
+            <button class="suggestion" type="button">What is the baseline?</button>
+            <button class="suggestion" type="button">What datasets do they use?</button>
+            <button class="suggestion" type="button">What are the main results?</button>
+          </div>
+        </div>
+      </div>
+      <div class="composer-wrap">
+        <form class="composer" id="form">
+          <label class="field" for="question" style="margin:0">
+            <span class="sr-only" style="position:absolute;left:-10000px">Your question</span>
+            <input id="question" name="question" maxlength="2000" autocomplete="off" placeholder="Ask a question across the collection…" required disabled>
+          </label>
+          <button class="send" id="send" type="submit" aria-label="Send question" title="Send question" disabled>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12 20 4l-5 16-3-7-8-1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m12 13 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+        </form>
+        <div class="status" id="status" role="status"></div>
+        <p class="hint">Each turn is answered independently using the selected scope. Verify important claims in the cited passages.</p>
+      </div>
+    </section>
+  </main>
+  <script>
+    const paperSelect = document.querySelector('#paper');
+    const questionInput = document.querySelector('#question');
+    const sendButton = document.querySelector('#send');
+    const form = document.querySelector('#form');
+    const messages = document.querySelector('#messages');
+    const welcome = document.querySelector('#welcome');
+    const status = document.querySelector('#status');
+    let papers = [];
+
+    function setStatus(message, error = false) {
+      status.textContent = message;
+      status.classList.toggle('error', error);
+    }
+
+    function addText(parent, tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      element.textContent = text;
+      parent.append(element);
+      return element;
+    }
+
+    function renderTurn(question, scopeValue) {
+      welcome.hidden = true;
+      const turn = document.createElement('article');
+      turn.className = 'turn';
+      turn.append(document.createElement('div')).className = 'question';
+      turn.lastChild.textContent = question;
+      const card = document.createElement('div');
+      card.className = 'answer-card';
+      addText(card, 'div', 'answer-head', 'Thinking…');
+      addText(card, 'div', 'answer', 'Searching the selected scope and checking its evidence.');
+      turn.append(card);
+      messages.append(turn);
+      messages.scrollTop = messages.scrollHeight;
+      return {
+        complete(result) {
+          card.replaceChildren();
+          const head = document.createElement('div');
+          head.className = 'answer-head';
+          const dot = document.createElement('span');
+          dot.className = 'dot' + (result.abstain ? ' abstain' : '');
+          head.append(dot);
+          addText(head, 'span', '', result.abstain ? 'No supporting evidence found' : 'Answer');
+          addText(head, 'span', '', '· ' + Math.round(result.latency_ms) + ' ms');
+          const paper = papers.find(item => item.paper_id === scopeValue);
+          const scopeLabel = scopeValue === '__all__' ? 'All papers' : (paper ? paper.title : scopeValue);
+          addText(head, 'span', '', '· ' + scopeLabel);
+          card.append(head);
+          addText(card, 'div', 'answer', result.answer);
+          if (result.citations.length) {
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.textContent = `Evidence (${result.citations.length} citation${result.citations.length === 1 ? '' : 's'})`;
+            details.append(summary);
+            for (const citation of result.citations) {
+              const block = document.createElement('div');
+              block.className = 'citation';
+              addText(block, 'div', 'citation-id', `${citation.paper_title || citation.paper_id} · ${citation.paper_id} · ${citation.section || 'Paragraph'} · ${citation.paragraph_id}`);
+              addText(block, 'div', 'quote', '“' + citation.quote + '”');
+              details.append(block);
+            }
+            card.append(details);
+          }
+          const retrieval = document.createElement('details');
+          const retrievalLabel = document.createElement('summary');
+          retrievalLabel.textContent = `Retrieved passages (${result.retrieved_paragraph_ids.length})`;
+          retrieval.append(retrievalLabel);
+          const sources = result.retrieved_sources || [];
+          const retrievalText = sources.length
+            ? sources.map(source => `${source.paper_title} (${source.paper_id}) · ${source.paragraph_id}`).join('\n')
+            : (result.retrieved_paragraph_ids.join(' · ') || 'No passages returned');
+          addText(retrieval, 'div', 'retrieved', retrievalText);
+          card.append(retrieval);
+          messages.scrollTop = messages.scrollHeight;
+        },
+        fail(message) {
+          card.replaceChildren();
+          addText(card, 'div', 'answer', message);
+        }
+      };
+    }
+
+    async function loadPapers() {
+      try {
+        const response = await fetch('/api/papers');
+        if (!response.ok) throw new Error('Could not load the paper list.');
+        const data = await response.json();
+        papers = data.papers;
+        paperSelect.replaceChildren();
+        const allOption = document.createElement('option');
+        allOption.value = '__all__';
+        allOption.textContent = `All papers (${papers.length})`;
+        paperSelect.append(allOption);
+        for (const paper of papers) {
+          const option = document.createElement('option');
+          option.value = paper.paper_id;
+          option.textContent = `${paper.title} (${paper.paper_id})`;
+          paperSelect.append(option);
+        }
+        paperSelect.value = '__all__';
+        paperSelect.disabled = papers.length === 0;
+        questionInput.disabled = papers.length === 0;
+        sendButton.disabled = papers.length === 0;
+        setStatus(papers.length ? `${papers.length} papers ready.` : 'No papers found in the configured corpus.', !papers.length);
+      } catch (error) {
+        paperSelect.replaceChildren(new Option('Paper list unavailable', ''));
+        setStatus(error.message, true);
+      }
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const question = questionInput.value.trim();
+      const scopeValue = paperSelect.value;
+      if (!question || !scopeValue) return;
+      questionInput.value = '';
+      questionInput.disabled = true;
+      sendButton.disabled = true;
+      setStatus('Retrieving and generating an evidence grounded answer…');
+      const turn = renderTurn(question, scopeValue);
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(scopeValue === '__all__'
+            ? {scope: 'all', question}
+            : {scope: 'paper', paper_id: scopeValue, question})
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'The request failed.');
+        turn.complete(data);
+        setStatus('Answer ready. Open the evidence sections to inspect the source passages.');
+      } catch (error) {
+        turn.fail(error.message);
+        setStatus(error.message, true);
+      } finally {
+        questionInput.disabled = false;
+        sendButton.disabled = false;
+        questionInput.focus();
+      }
+    });
+
+    document.querySelector('#newChat').addEventListener('click', () => {
+      for (const child of Array.from(messages.children)) if (child !== welcome) child.remove();
+      welcome.hidden = false;
+      setStatus('New chat started. Each question is answered independently within its selected scope.');
+      questionInput.focus();
+    });
+
+    document.querySelectorAll('.suggestion').forEach(button => button.addEventListener('click', () => {
+      questionInput.value = button.textContent;
+      questionInput.focus();
+    }));
+
+    loadPapers();
+  </script>
+</body>
+</html>

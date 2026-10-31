@@ -1,0 +1,2 @@
+{"question_id":"demo-answer","answer":"82%","abstain":false,"citations":[{"paragraph_id":"demo:p00000","quote":"82% accuracy"}],"retrieved_paragraph_ids":["demo:p00000","demo:p00001"],"latency_ms":0}
+{"question_id":"demo-abstain","answer":"Unanswerable","abstain":true,"citations":[],"retrieved_paragraph_ids":["demo:p00001"],"latency_ms":0}

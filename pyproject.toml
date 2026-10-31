@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qasper-rag-take-home"
+version = "0.2.0"
+description = "An extensible, evidence-grounded QASPER research assistant"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+ragas = ["ragas>=0.4.3,<0.5", "langchain-openai", "langchain-community<0.4"]
+
+[project.scripts]
+qasper-rag = "qasper_rag.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["qasper_rag*"]
+
+[tool.setuptools.package-data]
+qasper_rag = ["web/static/*.html"]
+
+[tool.ruff]
+line-length = 80
+target-version = "py310"
+extend-exclude = ["tests"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "ANN", "D", "N", "SIM", "RET", "PIE", "C4", "PERF", "RUF"]
+ignore = ["D105", "D107", "D203", "D213", "ANN401", "RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"

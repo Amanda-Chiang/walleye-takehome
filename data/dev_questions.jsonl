@@ -1,0 +1,20 @@
+{"question_id": "99e78c390932594bd833be0f5c890af5c605d808", "paper_id": "1912.04961", "question": "What is the baseline?"}
+{"question_id": "54830abe73fef4e629a36866ceeeca10214bd2c8", "paper_id": "1909.09551", "question": "How they utilize LDA and Gibbs sampling to evaluate ISWC and WWW publications?"}
+{"question_id": "f9aa055bf73185ba939dfb03454384810eb17ad1", "paper_id": "2002.07306", "question": "How much training data from the non-English language is used by the system?"}
+{"question_id": "c7486d039304ca9d50d0571236429f4f6fbcfcf7", "paper_id": "1806.04511", "question": "which non-english language was the had the worst results?"}
+{"question_id": "92d1a6df3041667dc662376938bc65527a5a1c3c", "paper_id": "1705.01265", "question": "Do they report results only on English datasets?"}
+{"question_id": "3355918bbdccac644afe441f085d0ffbbad565d7", "paper_id": "2001.01269", "question": "How are the supervised scores of the words calculated?"}
+{"question_id": "c262d3d1c5a8b6fef6b594d5eee86bc2b09e3baf", "paper_id": "1908.07195", "question": "Is the discriminator's reward made available at each step to the generator?"}
+{"question_id": "e101e38efaa4b931f7dd75757caacdc945bb32b4", "paper_id": "1910.12574", "question": "What baseline is used?"}
+{"question_id": "932b39fd6c47c6a880621a62e6a978491d881d60", "paper_id": "1611.08661", "question": "What baselines are used for comparison?"}
+{"question_id": "dd76130ec5fac477123fe8880472d03fbafddef6", "paper_id": "1705.01214", "question": "What is the state of the art described in the paper?"}
+{"question_id": "ffde866b1203a01580eb33237a0bb9da71c75ecf", "paper_id": "2002.01320", "question": "How big is Augmented LibriSpeech dataset?"}
+{"question_id": "37f8c034a14c7b4d0ab2e0ed1b827cc0eaa71ac6", "paper_id": "2002.07306", "question": "What metrics are used for evaluation?"}
+{"question_id": "48bd71477d5f89333fa7ce5c4556e4d950fb16ed", "paper_id": "2002.01207", "question": "what surface-level features are used?"}
+{"question_id": "de3b1145cb4111ea2d4e113f816b537d052d9814", "paper_id": "1907.09369", "question": "What baseline is used?"}
+{"question_id": "249c805ee6f2ebe4dbc972126b3d82fb09fa3556", "paper_id": "1908.04042", "question": "how is diversity measured?"}
+{"question_id": "9eabb54c2408dac24f00f92cf1061258c7ea2e1a", "paper_id": "1909.09067", "question": "Which information about text structure is included in the corpus?"}
+{"question_id": "c598028815066089cc1e131b96d6966d2610467a", "paper_id": "1911.07555", "question": "Is the lexicon the same for all languages?"}
+{"question_id": "04bde1d2b445f971e97bb46ade2d0290981c7a32", "paper_id": "1705.04153", "question": "What is the meta knowledge specifically?"}
+{"question_id": "3fff37b9f68697d080dbd9d9008a63907137644e", "paper_id": "2001.03131", "question": "How do their results compare to state-of-the-art?"}
+{"question_id": "6415f38a06c2f99e8627e8ba6251aa4b364ade2d", "paper_id": "1911.07555", "question": "What are the languages represented in the DSL datasets? "}

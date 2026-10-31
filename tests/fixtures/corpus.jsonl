@@ -1,0 +1,3 @@
+{"paragraph_id":"demo:p00000","paper_id":"demo","section":"Results","text":"The model achieved 82% accuracy on the evaluation set."}
+{"paragraph_id":"demo:p00001","paper_id":"demo","section":"Methods","text":"We evaluated a classifier on English documents."}
+{"paragraph_id":"other:p00000","paper_id":"other","section":"Results","text":"The model achieved 99% accuracy on another evaluation set."}
