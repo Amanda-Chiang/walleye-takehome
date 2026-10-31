@@ -429,3 +429,88 @@ reranker is ever tested (D7).
 
 **Best configuration so far: raw-text hybrid** (003; recall@5 0.65,
 @10 0.79, @20 0.92).
+
+---
+
+## 005: Chosen retriever end to end (hybrid, shipped 20 questions)
+
+- **Date:** 2026-10-31
+- **Commit:** `0f97f56` (no code changes since 003)
+- **Config:** `config/composed-hybrid.json` with the starter's generator
+  (unchanged prompt, `openai/gpt-6-luna`, temperature 0), index
+  `.index-full`. Compared with 001 (starter baseline, same 20 questions).
+- **Commands:** `qasper-rag predict --index-dir .index-full --questions results/hybrid-20/questions.jsonl --config config/composed-hybrid.json --output results/hybrid-20/predictions.jsonl`
+  (run in two batches of 10 with a 65 s pause, see below), then
+  `python tools/score.py` and
+  `python tools/error_analysis.py --run-dir results/hybrid-20 --output experiments/runs/005-hybrid-20.md`.
+- **Results:** [005-hybrid-20.md](experiments/runs/005-hybrid-20.md),
+  [005-hybrid-20.metrics.json](experiments/runs/005-hybrid-20.metrics.json)
+- **Rate limit:** the first attempt in one batch hit OpenRouter's limit for
+  new accounts (20 requests per minute for this model): one question
+  failed with HTTP 429 after retries and was scored as missing. That run
+  was discarded and the 20 questions were rerun in two batches of 10, with
+  a 65 s pause before each, and the predictions merged. Latency per
+  question is unaffected (pauses happen between `predict` runs).
+
+### Metrics
+
+| Metric | 001 (starter) | 005 (hybrid) |
+| --- | ---: | ---: |
+| paragraph_evidence_recall_at_5 | 0.33 | **0.63** |
+| citation_evidence_f1 | 0.27 | **0.43** |
+| answerable_question_coverage | 0.73 | 0.87 |
+| answer_token_f1 | 0.22 | 0.24 |
+| abstention_precision / recall | 0.20 / 0.20 | 0.33 / 0.20 |
+| mean_query_latency_ms | 2,031 | 1,792 |
+
+| Outcome (error report) | 001 | 005 |
+| --- | ---: | ---: |
+| retrieval_miss | 9 | 4 |
+| retrieval_partial | 2 | 3 |
+| retrieved_answered | 3 | 6 |
+| over_abstain | 1 | 2 |
+| missed_abstain | 4 | 4 |
+| correct_abstain | 1 | 1 |
+
+**Consistency check:** the top 5 that `predict` used equals the top 5 in
+the retrieval evaluation (003-hybrid) on 15 of 15 answerable questions,
+and recall@5 is 0.63 in both, so the retrieval-only numbers reflect what
+the application does.
+
+### Failures read
+
+- **Retrieval gains carry through:** "What baselines are used for
+  comparison?" is now answered "TransE" with the right citation, and
+  "what surface-level features are used?" gives the gold features.
+- **The generator is now the bottleneck.** Answer F1 moved only 0.22 →
+  0.24 although evidence recall almost doubled:
+  - **Hedged answers instead of abstaining:** the same 4 unanswerable
+    questions as in 001 get answers like "…the passages do not say that
+    the reward is made available at each step" (D12, not addressed yet).
+  - **Wordy answers:** "Paper 1611.08661 uses TransE as the baseline."
+    where the gold is "TransE"; "Yes. Paper 1705.01265 reports…" where it
+    is "Yes" (D12).
+  - **Abstains with the evidence retrieved (2):** "Is the lexicon the same
+    for all languages?" (gold Yes; also in 001), and "How much training
+    data from the non-English language…", whose gold "No data. Pretrained
+    model is used." needs an inference the model declines to make.
+  - **Wrong reasoning over numbers (1):** "which non-English language had
+    the worst results?" now retrieves the right paragraph but answers
+    "Russian" (gold "Turkish").
+- **Caveat:** one end-to-end run on 20 questions. In 000 vs 001 the same
+  config gave different answer text on 6 of 10 questions, so answer F1
+  and abstention numbers here are noisy; the retrieval and citation
+  numbers are not (retrieval is repeatable, D14).
+
+### Retrieval conclusion for this iteration
+
+- **Chosen:** raw-text hybrid BM25 + dense (D15). Recall@5 0.65 / @10 0.79
+  / @20 0.92 on 100 dev questions.
+- **Not adopted:** section-title context (D9, 004).
+- **Remaining retrieval failures:** BM25's weak function-word matches
+  (most hybrid losses, 003); list items under one section (D10 notes);
+  captions outranking text; questions needing inference.
+- **Next, by expected impact:** the generator fixes in D12 (hedging,
+  wordiness), since they now limit the end-to-end score; then stopword
+  removal for BM25; then, if justified, a reranker test (D7 headroom) or
+  section-aware expansion for lists (D10).

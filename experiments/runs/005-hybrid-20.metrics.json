@@ -1,0 +1,13 @@
+{
+  "questions": 20,
+  "answer_token_f1": 0.23933010080221034,
+  "paragraph_evidence_recall_at_5": 0.6333333333333333,
+  "citation_evidence_f1": 0.42666666666666664,
+  "abstention_precision": 0.3333333333333333,
+  "abstention_recall": 0.2,
+  "abstention_f1": 0.25,
+  "answerable_question_coverage": 0.8666666666666667,
+  "missing_outputs": 0,
+  "mean_query_latency_ms": 1791.5227873716503,
+  "latency_observations": 20
+}

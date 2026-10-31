@@ -175,6 +175,11 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 
 - **Status:** Accepted, 2026-10-31; revised the same day after review. Not
   built, and out of scope for the current iteration.
+- **Headroom observed (EXPERIMENTS.md 003, 005):** for the chosen hybrid
+  config, recall@5 is 0.65 and recall@20 is 0.92, so headroom exists: 39 of
+  62 missed gold paragraphs are ranked 6–20. 23 are below rank 20, out of
+  any reranker's reach. A reranker is a candidate to *test* in a later
+  iteration, on a subset, against its latency.
 - **Decision:** Recall@20 well above recall@5 on the D6 retrieval set is
   *headroom*: the right paragraph is often found but ranked too low. That
   is a necessary sign, not a decision. If headroom appears, a later
@@ -262,6 +267,16 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 
 - **Status:** Accepted, 2026-10-31; revised the same day after review.
   Parent-child retrieval is out of scope for the current iteration.
+- **Diagnostic notes so far (EXPERIMENTS.md 002–004):** the clearest
+  pattern among misses is *list items under one section*. The question asks
+  for a set (baselines, systems, strategies), the evidence is several
+  sibling paragraphs that each describe one item without repeating the
+  question's words, and a sentence announcing the list ranks first. Seen
+  in "state of the art" (ELIZA, PARRY, …), "baseline approaches"
+  (K-means, LEM, DPEMM), "backoff strategies" and "What are the
+  baselines?". This is the strongest argument for testing some
+  section-aware expansion later. Single missed paragraphs far from any hit
+  are more common and would not be helped by it.
 - **Decision:** `tools/retrieval_eval.py` reports, for each question, the
   paragraphs of the best-matching reference that the top 5 missed, with
   their rank in the top 20 and their section, plus the top-20 ranking.
@@ -350,3 +365,24 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   one sample of the API's variation. The starter's `EmbeddingRetriever` is
   unchanged.
 - **Evidence:** EXPERIMENTS.md 002b (the new dense reference).
+
+## D15: Default retriever: hybrid BM25 + dense
+
+- **Status:** Accepted, 2026-10-31
+- **Decision:** `config/composed-hybrid.json` (raw text, whole paragraphs,
+  BM25 + dense `text-embedding-3-small` at 256 dimensions, reciprocal rank
+  fusion with k 60, no credit for non-matches) is the agent's default
+  retriever. The starter's `config/baseline.json` stays as the reference
+  baseline.
+- **Why:** On 100 answerable dev questions it has the best recall@5 (0.65
+  vs 0.59 dense and 0.54 BM25), is never worse than both single scorers,
+  and fixes the exact-word misses dense had (EXPERIMENTS.md 003). End to
+  end on the shipped 20 it doubles evidence recall@5 over run 001 (0.33 →
+  0.63) and cuts retrieval misses from 9 to 4 (005). Section context (D9)
+  added nothing.
+- **Strength of the evidence:** the recall@5 lead over dense rests on 15
+  wins against 9 losses (sign test p = 0.31), so it is suggestive, not
+  conclusive. Hybrid's losses have a known cause (BM25's weak matches on
+  function words), with stopword removal as the next candidate.
+- **Cost:** No extra API calls per question beyond dense (BM25 is local;
+  question embeddings are cached, D14). Index build is the same as dense.
