@@ -1,0 +1,120 @@
+{"question_id": "99e78c390932594bd833be0f5c890af5c605d808", "paper_id": "1912.04961", "question": "What is the baseline?"}
+{"question_id": "54830abe73fef4e629a36866ceeeca10214bd2c8", "paper_id": "1909.09551", "question": "How they utilize LDA and Gibbs sampling to evaluate ISWC and WWW publications?"}
+{"question_id": "f9aa055bf73185ba939dfb03454384810eb17ad1", "paper_id": "2002.07306", "question": "How much training data from the non-English language is used by the system?"}
+{"question_id": "c7486d039304ca9d50d0571236429f4f6fbcfcf7", "paper_id": "1806.04511", "question": "which non-english language was the had the worst results?"}
+{"question_id": "92d1a6df3041667dc662376938bc65527a5a1c3c", "paper_id": "1705.01265", "question": "Do they report results only on English datasets?"}
+{"question_id": "3355918bbdccac644afe441f085d0ffbbad565d7", "paper_id": "2001.01269", "question": "How are the supervised scores of the words calculated?"}
+{"question_id": "c262d3d1c5a8b6fef6b594d5eee86bc2b09e3baf", "paper_id": "1908.07195", "question": "Is the discriminator's reward made available at each step to the generator?"}
+{"question_id": "e101e38efaa4b931f7dd75757caacdc945bb32b4", "paper_id": "1910.12574", "question": "What baseline is used?"}
+{"question_id": "932b39fd6c47c6a880621a62e6a978491d881d60", "paper_id": "1611.08661", "question": "What baselines are used for comparison?"}
+{"question_id": "dd76130ec5fac477123fe8880472d03fbafddef6", "paper_id": "1705.01214", "question": "What is the state of the art described in the paper?"}
+{"question_id": "ffde866b1203a01580eb33237a0bb9da71c75ecf", "paper_id": "2002.01320", "question": "How big is Augmented LibriSpeech dataset?"}
+{"question_id": "37f8c034a14c7b4d0ab2e0ed1b827cc0eaa71ac6", "paper_id": "2002.07306", "question": "What metrics are used for evaluation?"}
+{"question_id": "48bd71477d5f89333fa7ce5c4556e4d950fb16ed", "paper_id": "2002.01207", "question": "what surface-level features are used?"}
+{"question_id": "de3b1145cb4111ea2d4e113f816b537d052d9814", "paper_id": "1907.09369", "question": "What baseline is used?"}
+{"question_id": "249c805ee6f2ebe4dbc972126b3d82fb09fa3556", "paper_id": "1908.04042", "question": "how is diversity measured?"}
+{"question_id": "9eabb54c2408dac24f00f92cf1061258c7ea2e1a", "paper_id": "1909.09067", "question": "Which information about text structure is included in the corpus?"}
+{"question_id": "c598028815066089cc1e131b96d6966d2610467a", "paper_id": "1911.07555", "question": "Is the lexicon the same for all languages?"}
+{"question_id": "ba539cab80d25c3e20f39644415ed48b9e4e4185", "paper_id": "1905.11268", "question": "How do the backoff strategies work?"}
+{"question_id": "aa7d327ef98f9f9847b447d4def04889b4508d7a", "paper_id": "1612.03226", "question": "How much data samples do they start with before obtaining the initial model labels?"}
+{"question_id": "b9ea841b817ba23281c95c7a769873b840dee8d5", "paper_id": "1805.07133", "question": "did they collect their own data?"}
+{"question_id": "e44a6bf67ce3fde0c6608b150030e44d87eb25e3", "paper_id": "1611.03599", "question": "What topics are included in the debate data?"}
+{"question_id": "a253749e3b4c4f340778235f640ce694642a4555", "paper_id": "1908.08717", "question": "Which corpora does this paper analyse?"}
+{"question_id": "6a31db1aca57a818f36bba9002561724655372a7", "paper_id": "1611.03599", "question": "What is the size of the Chinese data?"}
+{"question_id": "0602a974a879e6eae223cdf048410b5a0111665e", "paper_id": "1908.09246", "question": "What baseline approaches does this approach out-perform?"}
+{"question_id": "d67c01d9b689c052045f3de1b0918bab18c3f174", "paper_id": "1610.00956", "question": "How large are the improvements of the Attention-Sum Reader model when using the BookTest dataset?"}
+{"question_id": "fbaf060004f196a286fef67593d2d76826f0304e", "paper_id": "1806.04511", "question": "what dataset was used for training?"}
+{"question_id": "dca86fbe1d57b44986055b282a03c15ef7882e51", "paper_id": "1712.05999", "question": "How is the ground truth for fake news established?"}
+{"question_id": "04bde1d2b445f971e97bb46ade2d0290981c7a32", "paper_id": "1705.04153", "question": "What is the meta knowledge specifically?"}
+{"question_id": "34dc0838632d643f33c8dbfe7bd4b656586582a2", "paper_id": "1909.00105", "question": "What are the baseline models?"}
+{"question_id": "6ecb69360449bb9915ac73c0a816c8ac479cbbfc", "paper_id": "1912.08904", "question": "What modalities are supported by Macaw?"}
+{"question_id": "bdf93053b1b9b0a21f77ed370cf4d5a10df70e3e", "paper_id": "1706.01875", "question": "What was their system's performance?"}
+{"question_id": "692c9c5d9ff9cd3e0ce8b5e4fa68dda9bd23dec1", "paper_id": "1612.08205", "question": "How many users do they look at?"}
+{"question_id": "74e866137b3452ec50fb6feaf5753c8637459e62", "paper_id": "1604.00400", "question": "What manual Pyramid scores are used?"}
+{"question_id": "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f", "paper_id": "1810.12196", "question": "What baselines are presented?"}
+{"question_id": "bd419f4094186a5ce74ba6ac1622b24e29e553f4", "paper_id": "1909.08970", "question": "How well did the baseline perform?"}
+{"question_id": "dc2a2c177cd5df6da5d03e6e74262bf424850ec9", "paper_id": "2002.12612", "question": "How is the political bias of different sources included in the model?"}
+{"question_id": "10fb7dc031075946153baf0a0599e126de29e3a4", "paper_id": "1908.07245", "question": "How does the neural network architecture accomodate an unknown amount of senses per word?"}
+{"question_id": "a29c071065d26e5ee3c3bcd877e7f215c59d1d33", "paper_id": "1908.10084", "question": "What metrics are used for the STS tasks?"}
+{"question_id": "3fff37b9f68697d080dbd9d9008a63907137644e", "paper_id": "2001.03131", "question": "How do their results compare to state-of-the-art?"}
+{"question_id": "deb89bca0925657e0f91ab5daca78b9e548de2bd", "paper_id": "1904.04358", "question": "What are the five different binary classification tasks?"}
+{"question_id": "23e2971c962bb6486bc0a66ff04242170dd22a1d", "paper_id": "1901.01010", "question": "Which is more useful, visual or textual features?"}
+{"question_id": "6415f38a06c2f99e8627e8ba6251aa4b364ade2d", "paper_id": "1911.07555", "question": "What are the languages represented in the DSL datasets? "}
+{"question_id": "c571deefe93f0a41b60f9886db119947648e967c", "paper_id": "1810.12085", "question": "what datasets were used?"}
+{"question_id": "612c3675b6c55b60ae6d24265ed8e20f62cb117e", "paper_id": "2003.08385", "question": "Did they pefrorm any cross-lingual vs single language evaluation?"}
+{"question_id": "8ce11515634236165cdb06ba80b9a36a8b9099a2", "paper_id": "1706.08198", "question": "Is pre-training effective in their evaluation?"}
+{"question_id": "78536da059b884d6ad04680baeb894895458055c", "paper_id": "2001.02885", "question": "What were the baselines?"}
+{"question_id": "70148c8d0f345ea36200d5ba19d021924d98e759", "paper_id": "1906.01040", "question": "What is the McGurk effect?"}
+{"question_id": "67e9e147b2cab5ba43572ce8a17fc863690172f0", "paper_id": "1912.00667", "question": "How are the interpretability merits of the approach demonstrated?"}
+{"question_id": "5a81732d52f64e81f1f83e8fd3514251227efbc7", "paper_id": "1701.08229", "question": "What dataset is used for this study?"}
+{"question_id": "55bd59076a49b19d3283af41c5e3ccb875f3eb0c", "paper_id": "1902.09666", "question": "What is the best performing model?"}
+{"question_id": "ff6c9af28f0e2bb4fb6a69f124665f8ceb966fbc", "paper_id": "1706.06894", "question": "Which sports clubs are the targets?"}
+{"question_id": "4d47bef19afd70c10bbceafd1846516546641a2f", "paper_id": "1903.09722", "question": "What language model architectures are used?"}
+{"question_id": "e025061e199b121f2ac8f3d9637d9bf987d65cd5", "paper_id": "1712.00991", "question": "What is the average length of the sentences?"}
+{"question_id": "a1645d0ba50e4c29f0feb806521093e7b1459081", "paper_id": "1604.08504", "question": "What is the benchmark dataset and is its quality high?"}
+{"question_id": "56a8826cbee49560592b2d4b47b18ada236a12b9", "paper_id": "1712.05999", "question": "How did they determine fake news tweets?"}
+{"question_id": "4bc2784be43d599000cb71d31928908250d4cef3", "paper_id": "2002.01664", "question": "What is the GhostVLAD approach?"}
+{"question_id": "f903396d943541a8cc65edefb04ca37814ed30dd", "paper_id": "1907.01468", "question": "What dataset do they use for analysis?"}
+{"question_id": "984fc3e726848f8f13dfe72b89e3770d00c3a1af", "paper_id": "1703.10344", "question": "What features are used to represent the novelty of news articles to entity pages?"}
+{"question_id": "17a1eff7993c47c54eddc7344e7454fbe64191cd", "paper_id": "1807.07279", "question": "What experiments do they use to quantify the extent of interpretability?"}
+{"question_id": "2c59528b6bc5b5dc28a7b69b33594b274908cca6", "paper_id": "1905.11268", "question": "What is a semicharacter architecture?"}
+{"question_id": "c81f215d457bdb913a5bade2b4283f19c4ee826c", "paper_id": "1910.12574", "question": "Which publicly available datasets are used?"}
+{"question_id": "7b4fb6da74e6bd1baea556788a02969134cf0800", "paper_id": "1909.03405", "question": "Do they train their model starting from a checkpoint?"}
+{"question_id": "ac7f6497be4bcca64e75f28934b207c9e8097576", "paper_id": "1912.00903", "question": "What kind of sentences were read?"}
+{"question_id": "9b76f428b7c8c9fc930aa88ee585a03478bff9b3", "paper_id": "2003.13032", "question": "How many documents are in the new corpus?"}
+{"question_id": "22732cb9476e521452bf0538f3fdb94cf3867651", "paper_id": "1701.05574", "question": "What kind of stylistic features are obtained?"}
+{"question_id": "ceb4bac1f6c506b5dab37607354530faee02ccac", "paper_id": "1910.05603", "question": "What is the performance reported for the best models in the VLSP 2018 and VLSP 2019 challenges?"}
+{"question_id": "493e971ee3f57a821ef1f67ef3cd47ade154e7c4", "paper_id": "1803.09123", "question": "What word embeddings do they test?"}
+{"question_id": "f3c204723da53c7c8ef4dc1018ffbee545e81056", "paper_id": "1908.09246", "question": "Do they report results only on English data?"}
+{"question_id": "adbf33c6144b2f5c40d0c6a328a92687a476f371", "paper_id": "1802.07862", "question": "Does their NER model learn NER from both text and images?"}
+{"question_id": "184b0082e10ce191940c1d24785b631828a9f714", "paper_id": "1604.00400", "question": "What is the common belief that this paper refutes? (c.f. 'contrary to the common belief, ROUGE is not much [sic] reliable'"}
+{"question_id": "1038542243efe5ab3e65c89385e53c4831cd9981", "paper_id": "2001.07786", "question": "What is the corpus used for the task?"}
+{"question_id": "7705dd04acedaefee30d8b2c9978537afb2040dc", "paper_id": "1604.00727", "question": "What word level and character level model baselines are used?"}
+{"question_id": "498c0229f831c82a5eb494cdb3547452112a66a0", "paper_id": "1905.07791", "question": "How do they match annotators to instances?"}
+{"question_id": "bd5bd1765362c2d972a762ca12675108754aa437", "paper_id": "1804.05918", "question": "How much does this model improve state-of-the-art?"}
+{"question_id": "1b23c4535a6c10eb70bbc95313c465e4a547db5e", "paper_id": "1709.07814", "question": "Which architecture do they use for the encoder and decoder?"}
+{"question_id": "747b847d687f703cc20a87877c5b138f26ff137d", "paper_id": "1603.01514", "question": "Which parallel corpora are used?"}
+{"question_id": "b0dbe75047310fec4d4ce787be5c32935fc4e37b", "paper_id": "1809.03449", "question": "How do the authors examine whether a model is robust to noise or not?"}
+{"question_id": "787c4d4628eac00dbceb1c96020bff0090edca46", "paper_id": "2003.08385", "question": "What annotations are present in dataset?"}
+{"question_id": "c70bafc35e27be9d1efae60596bc0dd390c124c0", "paper_id": "1911.00841", "question": "Are the answers double (and not triple) annotated?"}
+{"question_id": "e807d347742b2799bc347c0eff19b4c270449fee", "paper_id": "2002.01984", "question": "What dataset did they use?"}
+{"question_id": "b6f7fadaa1bb828530c2d6780289f12740229d84", "paper_id": "1903.11437", "question": "what language pairs are explored?"}
+{"question_id": "aefa333b2cf0a4000cd40566149816f5b36135e7", "paper_id": "1604.05372", "question": "What evaluation metric do they use?"}
+{"question_id": "3941401a182a3d6234894a5c8a75d48c6116c45c", "paper_id": "1912.00667", "question": "Which real-world datasets are used?"}
+{"question_id": "b3de9357c569fb1454be8f2ac5fcecaea295b967", "paper_id": "2004.02192", "question": "How many tweets are in the dataset?"}
+{"question_id": "9c33b340aefbc1f15b6eb6fb3e23ee615ce5b570", "paper_id": "1904.04358", "question": "How was the spatial aspect of the EEG signal computed?"}
+{"question_id": "26327ccebc620a73ba37a95aabe968864e3392b2", "paper_id": "1604.03114", "question": "what aspects of conversation flow do they look at?"}
+{"question_id": "30af1926559079f59b0df055da76a3a34df8336f", "paper_id": "1912.03627", "question": "what is the source of the data?"}
+{"question_id": "63a1cbe66fd58ff0ead895a8bac1198c38c008aa", "paper_id": "1912.08960", "question": "Which existing models are evaluated?"}
+{"question_id": "9b7655d39c7a19a23eb8944568eb5618042b9026", "paper_id": "2002.04181", "question": "Which toolkits do they use?"}
+{"question_id": "483a699563efcb8804e1861b18809279f21c7610", "paper_id": "1910.06592", "question": "Was the approach used in this work to detect fake news fully supervised?"}
+{"question_id": "a4a1fcef760b133e9aa876ac28145ad98a609927", "paper_id": "1705.01265", "question": "Which other hyperparameters, other than number of clusters are typically evaluated in this type of research?"}
+{"question_id": "fd0a3e9c210163a55d3ed791e95ae3875184b8f8", "paper_id": "1709.07814", "question": "Which dataset do they use?"}
+{"question_id": "2da4c3679111dd92a1d0869dae353ebe5989dfd2", "paper_id": "1908.08717", "question": "What are four major corpora of French broadcast?"}
+{"question_id": "20e38438471266ce021817c6364f6a46d01564f2", "paper_id": "1911.02855", "question": "How are weights dynamically adjusted?"}
+{"question_id": "375b281e7441547ba284068326dd834216e55c07", "paper_id": "1912.08904", "question": "What is a wizard of oz setup?"}
+{"question_id": "55c8f7acbfd4f5cde634aaecd775b3bb32e9ffa3", "paper_id": "1708.01464", "question": "what evaluation metrics were used?"}
+{"question_id": "0ee73909ac638903da4a0e5565c8571fc794ab96", "paper_id": "1612.02482", "question": "How were the human judgements assembled?"}
+{"question_id": "e2b0cd30cf56a4b13f96426489367024310c3a05", "paper_id": "2001.07786", "question": "How is evaluation performed?"}
+{"question_id": "4e1a67f8dc68b55a5ce18e6cd385ae9ab90d891f", "paper_id": "1703.04001", "question": "Does the experiments focus on a specific domain?"}
+{"question_id": "f9f59c171531c452bd2767dc332dc74cadee5120", "paper_id": "1904.04358", "question": "How many subjects does the EEG data come from?"}
+{"question_id": "dd09db5eb321083dba16c2550676e60682f9a0cd", "paper_id": "1908.06264", "question": "What labels does the dataset have?"}
+{"question_id": "b46c0015a122ee5fb95c2a45691cb97f80de1bb6", "paper_id": "1809.00530", "question": "What is the architecture of the model?"}
+{"question_id": "113d791df6fcfc9cecfb7b1bebaf32cc2e4402ab", "paper_id": "1708.01464", "question": "how is model compactness measured?"}
+{"question_id": "eb2d5edcdfe18bd708348283f92a32294bb193a5", "paper_id": "2002.08795", "question": "What are the baselines?"}
+{"question_id": "4907096cf16d506937e592c50ae63b642da49052", "paper_id": "1808.10245", "question": "What examples of the difficulties presented by the context-dependent nature of online aggression do they authors give?"}
+{"question_id": "2275b0e195cd9cb25f50c5c570da97a4cce5dca8", "paper_id": "2002.07306", "question": "How is the model transferred to other languages?"}
+{"question_id": "f651cd144b7749e82aa1374779700812f64c8799", "paper_id": "1810.04428", "question": "what evaluation metrics did they use?"}
+{"question_id": "565189b672efee01d22f4fc6b73cd5287b2ee72c", "paper_id": "1903.11437", "question": "what dataset is used?"}
+{"question_id": "2c85865a65acd429508f50b5e4db9674813d67f2", "paper_id": "1903.03530", "question": "Which data do they use as a starting point for the dialogue dataset?"}
+{"question_id": "902b3123aec0f3a39319ffa9d05ab8e08a2eb567", "paper_id": "2001.07786", "question": "What is the algorithm used to create word embeddings?"}
+{"question_id": "fb2b536dc8e442dffab408db992b971e86548158", "paper_id": "2002.03407", "question": "What is the interannotator agreement for the human evaluation?"}
+{"question_id": "e86130c5b9ab28f0ec539c2bed1b1ae9efb99b7d", "paper_id": "2001.02885", "question": "What is the size of SFU Review corpus?"}
+{"question_id": "63c3550c6fb42f41a0c93133e9fca12ac00df9b3", "paper_id": "1804.00720", "question": "Is it possible to convert a cloze-style questions to a naturally-looking questions?"}
+{"question_id": "ee2ad0ab64579cffb60853db6a8c0f971d7cf0ff", "paper_id": "1912.03627", "question": "who transcribed the corpus?"}
+{"question_id": "c9b8d3858c112859eabee54248b874331c48f71b", "paper_id": "1809.01541", "question": "What type of inflections are considered?"}
+{"question_id": "0101ebfbaba75fd47868ad0c796ac44ebc19c566", "paper_id": "1709.05036", "question": "How do they split text to obtain sentence levels?"}
+{"question_id": "27cf16bc9ef71761b9df6217f00f39f21130ce15", "paper_id": "1906.01040", "question": "Are humans and machine learning systems fooled by the same kinds of illusions?"}
+{"question_id": "252a645af9876241fb166e5822992ce17fec6eb6", "paper_id": "1707.06806", "question": "What is the average length of the title text?"}
+{"question_id": "007b13f05d234d37966d1aa7d85b5fd78564ff45", "paper_id": "1804.11346", "question": "Do the errors of the model reflect linguistic similarity between different L1s?"}
+{"question_id": "45be665a4504f0c7f458cf3f75a95d5a75eefd42", "paper_id": "2001.02885", "question": "What is the size of bioScope corpus?"}
