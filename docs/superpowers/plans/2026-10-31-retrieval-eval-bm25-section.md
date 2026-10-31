@@ -23,7 +23,7 @@ changes, the agentic loop, cross-paper questions, and the stashed
 | Adjacent / same-section / unrelated classification drives D10 | Report rank and section of each missed paragraph; no relation categories | Sharing a 30-paragraph "Experiments" section, or being adjacent, does not show that expansion would help |
 | Hard thresholds decide D7, D9, D10 | Metrics plus manual reading; reranker headroom is necessary, not sufficient | Avoids committing to architecture because an arbitrary number was crossed |
 | RRF ranks tied scores by paragraph position | Tied scores share one rank | Paragraphs with no BM25 match would otherwise get credit for appearing early in the paper |
-| One shared index folder, 20-question subset corpus | One index folder per config over the full corpus | No chance of configs overwriting each other's artifacts. The full index also serves the chat page |
+| Shared index folder over a 20-question subset corpus | Shared index folder `.index-full` over the full corpus, with isolation checked once (Task 3) | All composed configs use the same corpus; their only artifacts are an identical `paragraphs.jsonl` and an embedding cache keyed by model settings and text. No new infrastructure for isolation. The full index also serves the chat page |
 | Full code in the plan | Behavior, constraints and acceptance tests | The implementer writes the code |
 | Separate code and docs commits; every test and lint command logged | One cohesive commit per feature; log meaningful experiments only | Less overhead |
 | No end-to-end check | End-to-end check of the chosen retriever on the shipped 20 | Retrieval recall does not show whether answers and citations improve |
@@ -147,11 +147,12 @@ best-reference misses)".
 
 **Behavior:** `config/composed-dense.json` (already exists; same behavior as
 the starter's `EmbeddingRetriever`, checked in C11 and C14) is indexed over
-the **full corpus** in its own folder and evaluated on the 120 questions.
+the **full corpus** in the shared folder `.index-full` and evaluated on the
+120 questions. Every composed config in this plan reuses that folder.
 
 **Steps:**
 1. `qasper-rag index --corpus data/corpus.jsonl --config
-   config/composed-dense.json --index-dir .index-full-dense` (about 15.7k
+   config/composed-dense.json --index-dir .index-full` (about 15.7k
    paragraph embeddings, about $0.02, a few minutes).
 2. Run the evaluator on `data/eval-120`, writing
    `experiments/runs/002-dense.json`.
@@ -160,6 +161,13 @@ the **full corpus** in its own folder and evaluated on the 120 questions.
    (run 001). The 15 answerable ones should average recall@5 = 0.33.
 
 **Acceptance:**
+- Shared-folder isolation, checked once here: after indexing, `.index-full`
+  holds only `paragraphs.jsonl` (the same records as `data/corpus.jsonl`)
+  and
+  `embedding-cache.sqlite`. Composed configs read nothing else. Do not
+  index the starter's `config/baseline.json` into this folder: it would add
+  `embeddings.jsonl` and `embedding_metadata.json`, which composed configs
+  ignore but which make the folder harder to reason about.
 - `answerable_questions == 100`.
 - Top 5 identical to run 001 for all 20 questions. Embeddings are computed
   again for this index, so if any question differs, check whether the
@@ -216,8 +224,9 @@ recall@5/10/20, the reproduction result, and a short reading of at least
 - The existing dense parity test still passes.
 
 **Experiment:**
-1. Index each config over the full corpus in its own folder:
-   `.index-full-bm25`, `.index-full-hybrid`.
+1. Index each config into `.index-full` (BM25 adds nothing to the folder;
+   hybrid reuses the dense vectors from the cache, so no new embeddings).
+   Confirm the folder's file list is unchanged.
 2. Evaluate both on `data/eval-120`, writing `experiments/runs/003-bm25.json`
    and `003-hybrid.json`.
 3. Compare with 002: recall@5/10/20, plus per-question wins and losses at
@@ -243,8 +252,9 @@ unchanged when the section is empty. Answers and quotes still use the
 original paragraph.
 
 **Control:** each section config is a copy of its raw-text config with
-only `view` changed; verify with `git diff --no-index`. Separate index
-folders.
+only `view` changed; verify with `git diff --no-index`. Index into
+`.index-full`: the section text is new, so it is embedded once and added
+to the shared cache next to the raw-text vectors.
 
 **Acceptance tests:** the prefix format; an empty section is unchanged;
 run 001's Q13 case (BM25 finds the "Baseline Approaches" paragraph only
@@ -268,7 +278,7 @@ the matching raw-text config; read every loss.
    BM25 + dense" with the evidence.
 2. Run the chosen config end to end on the shipped 20 (API cost: about 20
    chat calls). Use `qasper-rag predict`, `tools/score.py` and
-   `tools/error_analysis.py`, with the full-corpus index for that config.
+   `tools/error_analysis.py`, with `.index-full`.
 3. Compare with run 001 using `score.py` metrics and the error report.
    Expect retrieval misses to fall; note any change in hedging or
    abstention, which this iteration does not address (D12).
