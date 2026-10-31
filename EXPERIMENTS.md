@@ -40,7 +40,12 @@ itself.
 | C3 | 2026-10-31 | Eval, 20 questions | `python tools/run_eval.py --count 20 --config config/baseline.json` | yes | See entry 001. Embedded 1,226 paragraphs, 20 predictions |
 | C4 | 2026-10-31 | Error analysis | `python tools/error_analysis.py --run-dir results/baseline-20 --output experiments/runs/001-baseline-20.md` | no | Outcome counts match the manual reading in entry 001 |
 | C5 | 2026-10-31 | Unit tests | `python -m unittest discover -s tests` | no | 36 tests, OK (2.3 s). Unmodified starter plus `tools/error_analysis.py`, which has no tests yet |
-| C6 | 2026-10-31 | Lint | `ruff format tools/error_analysis.py && ruff check tools/error_analysis.py` | no | Not run: `ruff` is not installed in `.venv`. |
+| C6 | 2026-10-31 | Lint | `ruff format tools/error_analysis.py && ruff check tools/error_analysis.py` | no | Not run: `ruff` is not installed in `.venv`. Done later as C10 |
+| C7 | 2026-10-31 | Setup | `python -m pip install --editable .` after adding `qasper_agent*` to `pyproject.toml` (D4) | no | `qasper_agent` importable |
+| C8 | 2026-10-31 | Setup | `python -m pip install ruff` | no | Lint tool installed in `.venv` (dev only, not a runtime dependency) |
+| C9 | 2026-10-31 | Unit tests | `python -m unittest discover -s tests` | no | 46 tests, OK: 36 starter tests + 10 in `tests/test_composed_retriever.py` |
+| C10 | 2026-10-31 | Lint | `ruff format src/qasper_agent tools/error_analysis.py && ruff check src/qasper_agent tools/error_analysis.py` | no | Clean after fixing 3 issues in `tools/error_analysis.py`. Its report for 001 was regenerated and is byte-identical |
+| C11 | 2026-10-31 | Parity check | Inline script: `ComposedRetriever` with `config/composed-dense.json` on `.index-baseline-20`, top 5 for the 20 questions, compared with `results/baseline-20/predictions.jsonl` | yes (20 question embeddings; paragraph vectors from cache) | **20/20 identical** retrieved IDs and order. The refactor preserves baseline retrieval. Load took 0.1 s |
 
 ---
 
