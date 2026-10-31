@@ -38,7 +38,8 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
     awkward workarounds, e.g. embedding at retriever load because
     `qasper-rag index` could only embed raw text (D3).
 - **Cost:** Each starter edit needs a short justification and a test.
-  Starter edits so far: `pyproject.toml` (D4).
+  Starter edits so far: `pyproject.toml` (D4), the `prepare_index` hook
+  in `commands/index.py` (D5).
 
 ## D2: Track every run in a log, with per-question error reports
 
@@ -80,10 +81,10 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 - **Alternatives:** One retriever class per combination, e.g.
   `HybridSectionRetriever`. Simple at first, but the number of classes grows
   with every combination.
-- **Cost:** `qasper-rag index` only embeds raw paragraph text. For other text
-  views, the retriever embeds its own units when it first loads and caches
-  them in `index_dir`. The first load of a new view costs API calls; later
-  loads use the cache. Index loading does not count toward query latency.
+- **Cost:** The starter's `qasper-rag index` only embeds raw paragraph
+  text, so the composed retriever embeds its own units into a cache in
+  `index_dir`. At first this happened when the retriever loaded; since D5
+  it happens at index time.
 - **Interface choices made while building it:**
   - Chunkers split *before* the text view renders, so a view such as
     "section title + text" applies to every chunk, not only the first.
@@ -116,3 +117,34 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 - **Cost:** One line changed in a starter file: `pyproject.toml`
   `include = ["qasper_rag*", "qasper_agent*"]`. Rerun
   `python -m pip install --editable .` after cloning.
+
+## D5: Add an opt-in `prepare_index` hook to `qasper-rag index`
+
+- **Status:** Accepted, 2026-10-31. The first starter code edit under the
+  revised D1.
+- **Decision:** If the configured retriever class defines
+  `prepare_index(paragraphs, settings, index_dir)`, `qasper-rag index`
+  calls it once after writing the index files. `ComposedRetriever`
+  implements it by building itself, which fits every scorer and fills
+  their caches.
+- **Why:** Without it, a retriever that needs anything other than raw
+  paragraph embeddings had to build at load time. That made the first
+  `predict` or `serve` silently slow (minutes for the full corpus, with
+  the chat page blocked), made `qasper-rag index` a no-op for our configs,
+  and moved API failures from indexing to startup. With the hook,
+  indexing is again the one-time slow step, as in the starter.
+- **Alternatives:**
+  - Keep building at load and add a separate `tools/build_index.py`. No
+    starter edit, but a second indexing command for developers to learn.
+  - Add a top-level `retriever.embedding` section so the starter embeds
+    raw text. That only warms the cache for raw text, not chunks or
+    section-prefixed text.
+- **Cost:** About 30 lines in `src/qasper_rag/commands/index.py`, a
+  paragraph in `docs/baseline.md`, and `tests/test_index_hook.py`.
+  Retrievers without the method, including the built-in one, are
+  unaffected. The hook runs after the index files are renamed into place,
+  so a failure inside it leaves a usable index with a partial cache; the
+  retriever finishes the cache on its next load.
+- **Evidence:** EXPERIMENTS.md C14: indexing the 20-question subset took
+  21 s; loading afterwards took 0.07 s with 0 embedding calls, and
+  retrieval matched the baseline on 20/20 questions.

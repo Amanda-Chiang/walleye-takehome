@@ -46,6 +46,9 @@ itself.
 | C9 | 2026-10-31 | Unit tests | `python -m unittest discover -s tests` | no | 46 tests, OK: 36 starter tests + 10 in `tests/test_composed_retriever.py` |
 | C10 | 2026-10-31 | Lint | `ruff format src/qasper_agent tools/error_analysis.py && ruff check src/qasper_agent tools/error_analysis.py` | no | Clean after fixing 3 issues in `tools/error_analysis.py`. Its report for 001 was regenerated and is byte-identical |
 | C11 | 2026-10-31 | Parity check | Inline script: `ComposedRetriever` with `config/composed-dense.json` on `.index-baseline-20`, top 5 for the 20 questions, compared with `results/baseline-20/predictions.jsonl` | yes (20 question embeddings; paragraph vectors from cache) | **20/20 identical** retrieved IDs and order. The refactor preserves baseline retrieval. Load took 0.1 s |
+| C12 | 2026-10-31 | Unit tests | `python -m unittest discover -s tests` after the `prepare_index` hook (D5) | no | 48 tests, OK (2 new in `tests/test_index_hook.py`) |
+| C13 | 2026-10-31 | Unit tests + lint | `python -m unittest discover -s tests`; `ruff check src/qasper_agent src/qasper_rag/commands/index.py` | no | 49 tests, OK (1 new: indexing fills the cache so loading embeds nothing). Lint clean |
+| C14 | 2026-10-31 | Index + parity check | `qasper-rag index --corpus results/baseline-20/corpus.jsonl --config config/composed-dense.json --index-dir .index-composed-dense-20`, then load `ComposedRetriever` with `EmbeddingClient.embed` counted and compare top 5 with `results/baseline-20/predictions.jsonl` | yes (1,226 paragraph embeddings + 20 question embeddings) | Index 21 s. Load **0.07 s, 0 embedding calls**. Retrieval **20/20 identical** to baseline |
 
 ---
 

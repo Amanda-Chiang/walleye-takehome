@@ -79,6 +79,22 @@ point for every retrieval experiment.
 settings and the exact text, so a new view or chunker embeds only new text,
 and models never mix.
 
+### Building an Index
+
+Index once with the usual command; `ComposedRetriever.prepare_index` runs
+through the starter's hook
+([D5](decisions.md#d5-add-an-opt-in-prepare_index-hook-to-qasper-rag-index))
+and fills every scorer's cache:
+
+```bash
+qasper-rag index --corpus data/corpus.jsonl \
+  --config config/composed-dense.json --index-dir .index-composed
+```
+
+`predict`, `answer` and `serve` then load from the cache. If a config
+changes the text view, chunker or embedding model, rerun the command on
+the same `--index-dir`: only new text gets embedded.
+
 ## Files We Added
 
 | Path | Role |
@@ -91,15 +107,21 @@ and models never mix.
 | `src/qasper_agent/retrieval/dense.py` | `DenseScorer` (embeddings, cosine similarity) |
 | `src/qasper_agent/retrieval/fusion.py` | `ReciprocalRankFusion` |
 | `config/composed-dense.json` | The baseline built from composed parts; reference for retrieval experiments |
-| `tests/test_composed_retriever.py` | Tests for the parts, scope, `top_k`, chunk rollup, reranking, and parity with the starter retriever |
+| `tests/test_composed_retriever.py` | Tests for the parts, scope, `top_k`, chunk rollup, reranking, index-time caching, and parity with the starter retriever |
 | `tools/error_analysis.py` | Tags each question in a scored run (`retrieval_miss`, `missed_abstain`, ...) and writes a markdown report. Reads gold, so use it only after prediction |
 | `EXPERIMENTS.md` | Running log of commands, metrics, failure analysis and decisions |
 | `experiments/runs/` | Per-question error reports and metrics for each logged run |
 | `docs/decisions.md` | Architecture decision log |
 | `docs/extensions.md` | This guide |
 
-Starter files changed: only `pyproject.toml`, to install `qasper_agent`
-([D4](decisions.md#d4-put-our-code-in-srcqasper_agent-next-to-the-starter)).
+Starter files changed:
+
+| File | Change | Decision |
+| --- | --- | --- |
+| `pyproject.toml` | Installs `qasper_agent` too | [D4](decisions.md#d4-put-our-code-in-srcqasper_agent-next-to-the-starter) |
+| `src/qasper_rag/commands/index.py` | Opt-in `prepare_index` hook for custom retrievers | [D5](decisions.md#d5-add-an-opt-in-prepare_index-hook-to-qasper-rag-index) |
+| `docs/baseline.md` | Documents the hook under "Extending the Starter" | D5 |
+| `tests/test_index_hook.py` (new) | Tests the hook | D5 |
 
 ## Planned
 
