@@ -74,7 +74,8 @@ itself.
 retrieved paragraphs were identical for all 10, and every abstain decision
 was the same. The answer text differed on 6 of 10 even at temperature 0, so
 small changes in token F1 between runs can be noise from the generator
-alone. Retrieval metrics are deterministic for a fixed index. This first
+alone. Retrieval metrics are deterministic for a fixed index (corrected in
+002: nearly, not exactly, for dense retrieval). This first
 check only confirmed that the full pipeline works; entry 001 replaces it.
 
 ---
@@ -169,3 +170,88 @@ paragraphs, so it scores low.
    cheap to test once retrieval is stable.
 3. **Get more questions** with `tools/prepare_data.py --count` before
    trusting small differences.
+
+---
+
+## 002: Dense retrieval baseline, 120 dev questions (retrieval only)
+
+- **Date:** 2026-10-31
+- **Commit:** `20a15c5` (evaluator), config unchanged since `d6f4623`
+- **Config:** `config/composed-dense.json`: raw paragraph text, whole
+  paragraphs, `text-embedding-3-small` at 256 dimensions, cosine, RRF
+  over one scorer (keeps its order). Same rankings as the starter's
+  `EmbeddingRetriever` (C11, C14).
+- **Data:** `data/eval-120` (100 answerable questions, 94 papers); full
+  corpus indexed (15,757 paragraphs), each question searching only its paper.
+- **Commands:**
+  - `qasper-rag index --corpus data/corpus.jsonl --config config/composed-dense.json --index-dir .index-full` (4 min 10 s; about $0.02)
+  - `python tools/retrieval_eval.py --config config/composed-dense.json --index-dir .index-full --questions data/eval-120/dev_questions.jsonl --gold data/eval-120/dev_gold.jsonl --output experiments/runs/002-dense.json`
+- **Results:** [experiments/runs/002-dense.json](experiments/runs/002-dense.json)
+
+### Metrics
+
+| Metric | Value |
+| --- | ---: |
+| recall@5 | 0.59 |
+| recall@10 | 0.79 |
+| recall@20 | 0.91 |
+| Questions with recall@5 = 1 / partial / 0 | 54 / 12 / 34 |
+| Missed paragraphs (best reference), ranked 6–10 / 11–20 / below 20 | 25 / 17 / 26 (68 total) |
+
+### Checks
+
+- **Shared index isolation:** `.index-full` holds only `paragraphs.jsonl`
+  (the same 15,757 records as `data/corpus.jsonl`) and
+  `embedding-cache.sqlite`.
+- **Reproduces run 001:** for the shipped 20 questions, the top 5 matches
+  `results/baseline-20/predictions.jsonl` on 20 of 20. Recall@5 on the 15
+  shipped answerable questions is 0.33, as in 001.
+- **Top-k prefix consistency on real data:**
+  `retrieve(q, 5) == retrieve(q, 20)[:5]` on 119 of 120 questions in the
+  first pass. A rerun of that question matched. Embedding all 120 questions
+  twice gave bit-identical vectors for only 70 of 120, with component
+  differences up to 5.4e-3, though no top 5 changed in that pair. **Dense
+  retrieval is nearly, not exactly, repeatable**: the API returns slightly
+  different question embeddings between calls, and about 1 in 120
+  questions can swap a paragraph at the top-5 boundary. The retriever logic
+  is prefix-consistent (unit tests); the variation comes from the
+  embedding API. This corrects the claim in 000 that retrieval is
+  deterministic. Differences of one question (0.01 recall) between runs
+  are within this noise.
+
+### What the numbers say
+
+- **The shipped 20 are harder than average for dense retrieval.** Recall@5
+  is 0.33 on their 15 answerable questions and 0.59 on all 100. A
+  conclusion drawn from the 20 alone would have overstated the retrieval
+  problem, which is why D6 exists.
+- **There is headroom below rank 5.** 42 of 68 missed paragraphs are in
+  the top 20 (recall@20 is 0.91). Per D7 this is a reason to consider
+  ranking improvements later, not a decision. 26 missed paragraphs are not
+  in the top 20 at all; reranking cannot reach those.
+
+### Failures read (14 questions with recall@5 < 1)
+
+| Pattern | Questions | Example |
+| --- | ---: | --- |
+| **List items under a section:** the question asks for a set; the evidence is several sibling paragraphs (one item each) that do not repeat the question's words, while a sentence *announcing* the list ranks first | 4 | "What is the state of the art described in the paper?": top 1 is "In the next section we present the state of the art…"; the gold paragraphs (ELIZA, PARRY, A.L.I.C.E., Cleverbot) are all below rank 20. Also "baseline approaches … out-perform" (K-means, LEM, DPEMM items), "backoff strategies" ("Pass-through: …") |
+| **Exact word match missed by dense:** the evidence contains the question's key word, yet ranks low | 2 | "What is the baseline?": the evidence says "as baseline models" and is below rank 20; "What baselines are used for comparison?": "Our baseline is TransE" at rank 15 |
+| **Answer word only in the section title** | 2 | "what surface-level features": evidence under "Features." at rank 7; "What baseline is used?": evidence under "Baseline Approaches" at ranks 8, 9 and below 20 |
+| **A caption outranks the text evidence** | 2 | "What metrics are used for evaluation?": top 1 is "Table 4: Evaluation in supervised UD parsing. The scores are LAS."; the text evidence is at ranks 6 and 10 |
+| **Needs inference or comparing numbers** | 2 | "How much training data from the non-English language…" (gold: none, a pretrained model is used) at rank 7; "which non-English language had the worst results" at rank 9 |
+| Other (background or partial-answer paragraphs) | 4 | "What is the size of the Chinese data?": a second dataset paragraph not in the top 20 |
+
+Patterns overlap (one question can show two). Some gold choices are
+debatable: for "What is the baseline?" (1912.04961) the top-1 paragraph
+describes two naive baselines, which a reader could accept.
+
+### Conclusion and next step
+
+The dense baseline is trusted: it reproduces run 001 exactly, and its
+noise is about one question in 120. Next, as planned (Task 4): BM25 and
+hybrid retrieval. The "exact word" misses are the direct target; the
+section-title misses are the target of the later section-context
+experiment. The "list items" pattern is the strongest argument seen so far
+for some form of section-aware expansion (D10), but it is out of scope for
+this iteration and is recorded here for later. Captions outranking text is
+worth watching in the BM25 and hybrid results.
