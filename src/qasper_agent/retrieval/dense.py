@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from qasper_agent.retrieval.base import Unit
-from qasper_rag.providers.embeddings import EmbeddingClient, Vector, normalize
+from qasper_rag.providers.embeddings import EmbeddingClient, Vector
 
 # The starter's cache file. Its keys include the embedding settings and the
 # text, so sharing it reuses vectors already paid for and cannot mix models.
@@ -41,10 +41,16 @@ class DenseScorer:
         )
 
     def score(self, query: str, candidates: list[int]) -> list[float]:
-        """Return the cosine similarity of each candidate to ``query``."""
-        query_vector = normalize(
-            self.embedder.embed([query])[0], self.embedder.dimensions
-        )
+        """Return the cosine similarity of each candidate to ``query``.
+
+        The question's embedding is cached like the paragraphs'. The API
+        returns slightly different vectors for the same text between calls,
+        so caching keeps reruns, and comparisons between configs, on
+        identical question vectors.
+        """
+        query_vector = self.embedder.embed_cached(
+            [query], self.cache_path, batch_size=1
+        )[0]
         return [
             sum(
                 a * b

@@ -6,13 +6,15 @@ from pathlib import Path
 from unittest.mock import patch
 
 from qasper_agent.components import build_component
+from qasper_agent.retrieval.base import Unit
+from qasper_agent.retrieval.dense import DenseScorer
 from qasper_agent.retrieval.composed import ComposedRetriever, best_paragraphs
 from qasper_agent.retrieval.fusion import ReciprocalRankFusion
 from qasper_rag.commands.index import build_index
 from qasper_rag.config import ConfigurationError
 from qasper_rag.pipeline.retrieval import EmbeddingRetriever
 from qasper_rag.pipeline.service import load_service
-from qasper_rag.providers.embeddings import EmbeddingClient
+from qasper_rag.providers.embeddings import EmbeddingClient, normalize
 from qasper_rag.storage.jsonl import read_jsonl
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -59,8 +61,12 @@ class ReverseReranker:
 
 
 def fake_embed(self, texts):
-    """A deterministic embedding that depends on the text."""
-    return [[1.0 + len(t) % 3, t.count("a"), t.count("e"), t.count("o")] for t in texts]
+    """A deterministic, normalized embedding that depends on the text.
+
+    Normalized like the real ``EmbeddingClient.embed``.
+    """
+    return [normalize([1.0 + len(t) % 3, t.count("a"), t.count("e"), t.count("o")], 4)
+            for t in texts]
 
 
 def keyword_settings(**extra):
@@ -117,6 +123,31 @@ class PartTests(unittest.TestCase):
             build_component("scorer", {}, None)
         with self.assertRaises(ConfigurationError):
             build_component("scorer", "not a dict", None)
+
+
+class DenseQueryCacheTests(unittest.TestCase):
+    def test_repeated_questions_reuse_their_cached_embedding(self):
+        # The embedding API returns slightly different vectors between calls
+        # (EXPERIMENTS.md 002), so a cached question vector keeps reruns and
+        # config comparisons on identical inputs.
+        settings = {"class": "qasper_agent.retrieval.dense:DenseScorer", "embedding": EMBEDDING}
+        units = [Unit("x:p0", "x", "alpha text"), Unit("x:p1", "x", "beta words")]
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, ENV), \
+                patch.object(EmbeddingClient, "embed", autospec=True,
+                             side_effect=fake_embed) as embed:
+            scorer = DenseScorer(settings, tmp)
+            scorer.fit(units)
+            calls_after_fit = embed.call_count
+            first = scorer.score("same question", [0, 1])
+            self.assertEqual(scorer.score("same question", [0, 1]), first)
+            self.assertEqual(embed.call_count, calls_after_fit + 1)
+            # A new scorer (e.g. a later evaluation run) reads the cache too.
+            reloaded = DenseScorer(settings, tmp)
+            reloaded.fit(units)
+            reloaded.score("same question", [0, 1])
+            self.assertEqual(embed.call_count, calls_after_fit + 1)
+            scorer.score("another question", [0, 1])
+            self.assertEqual(embed.call_count, calls_after_fit + 2)
 
 
 class BaselineParityTests(unittest.TestCase):

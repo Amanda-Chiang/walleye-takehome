@@ -318,3 +318,27 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 - **Revisit if:** After BM25, hybrid and D9, misses remain on questions whose
   wording differs from the paper's. Query rewriting is also a candidate
   retry action for the agentic loop (D8).
+
+## D14: Cache question embeddings in `DenseScorer`
+
+- **Status:** Accepted, 2026-10-31
+- **Decision:** `DenseScorer.score` embeds the question with the starter's
+  `EmbeddingClient.embed_cached`, in the same cache as the paragraphs,
+  instead of calling the API every time.
+- **Why:** EXPERIMENTS.md 002 found that the embedding API returns
+  slightly different vectors for the same text between calls (50 of 120
+  questions differed, up to 5.4e-3 per component), so about 1 question in
+  120 could swap a paragraph at the top-5 boundary between runs. Caching
+  freezes one vector per question: reruns become exactly repeatable, and
+  dense and hybrid configs are compared on identical question vectors. It
+  also saves API calls for repeated questions.
+- **Alternatives:** Leave it uncached and treat differences of about 0.01
+  recall as noise. Simpler, but comparisons of close configs would be
+  harder to trust.
+- **Cost:** One SQLite read per question (about a millisecond). Each new
+  question adds a cache entry; the key is a hash of the model settings and
+  the text, so the question text itself is not stored. The cache freezes
+  the first vector it sees, so results are repeatable but still reflect
+  one sample of the API's variation. The starter's `EmbeddingRetriever` is
+  unchanged.
+- **Evidence:** EXPERIMENTS.md 002b (the new dense reference).

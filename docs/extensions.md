@@ -104,7 +104,7 @@ the same `--index-dir`: only new text gets embedded.
 | `src/qasper_agent/retrieval/composed.py` | `ComposedRetriever` and `best_paragraphs` (rolls chunk scores up to paragraphs) |
 | `src/qasper_agent/retrieval/chunkers.py` | Chunkers |
 | `src/qasper_agent/retrieval/views.py` | Text views |
-| `src/qasper_agent/retrieval/dense.py` | `DenseScorer` (embeddings, cosine similarity) |
+| `src/qasper_agent/retrieval/dense.py` | `DenseScorer` (embeddings, cosine similarity). Paragraph and question embeddings both go through the starter's cache, so reruns use identical vectors ([D14](decisions.md#d14-cache-question-embeddings-in-densescorer)) |
 | `src/qasper_agent/retrieval/fusion.py` | `ReciprocalRankFusion` |
 | `config/composed-dense.json` | The baseline built from composed parts; reference for retrieval experiments |
 | `tests/test_composed_retriever.py` | Tests for the parts, scope, `top_k`, chunk rollup, reranking, index-time caching, and parity with the starter retriever |
