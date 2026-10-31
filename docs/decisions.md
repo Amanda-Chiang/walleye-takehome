@@ -171,15 +171,22 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   "gold only for scoring" needs care: the evaluation tool reads gold only
   after retrieval has finished.
 
-## D7: Build a reranker only if retrieval evaluation shows a gap
+## D7: Consider a reranker only when retrieval shows headroom
 
-- **Status:** Accepted as a gate, 2026-10-31. Not built.
-- **Decision:** Add a reranker only if recall@20 is clearly higher than
-  recall@5 on the D6 retrieval set, i.e. the right paragraph is often found
-  but ranked too low. If the gold paragraph is not in the top 20 either, a
-  reranker cannot help, and the effort goes to scoring and context instead.
-  The `Reranker` interface and `candidate_k` already exist in
-  `ComposedRetriever`, so building one later needs no structural change.
+- **Status:** Accepted, 2026-10-31; revised the same day after review. Not
+  built, and out of scope for the current iteration.
+- **Decision:** Recall@20 well above recall@5 on the D6 retrieval set is
+  *headroom*: the right paragraph is often found but ranked too low. That
+  is a necessary sign, not a decision. If headroom appears, a later
+  iteration may test a reranker on a representative subset, and keep it
+  only if retrieval improves enough to justify its latency and complexity.
+  If the gold paragraph is not in the top 20 either, a reranker cannot
+  help, and effort goes to scoring and context instead. The `Reranker`
+  interface and `candidate_k` already exist in `ComposedRetriever`, so a
+  test needs no structural change.
+- **Revision:** The first version said to build a reranker whenever the
+  gap crossed a fixed threshold. Review pointed out that headroom does not
+  show a reranker would close it, so the threshold was dropped.
 - **Default if built:** A listwise reranker that asks the existing
   OpenRouter chat model to order about 20 candidates. No new dependencies,
   one extra call (about 1–2 s) per question.
@@ -243,17 +250,24 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 - **Cost:** About 15 lines (a `TextView` class) and one re-index (well under
   one cent of embeddings). BM25 picks it up with no extra cost.
 
-## D10: Choose the parent-child form from near-miss data
+## D10: Parent-child retrieval: diagnose first, no automatic choice
 
-- **Status:** Accepted as a method, 2026-10-31. Form not chosen yet.
-- **Decision:** The retrieval evaluation reports, for each gold paragraph
-  that retrieval missed, whether it was (a) in the same section as a
-  retrieved paragraph, (b) directly next to one, or (c) unrelated to
-  anything retrieved. The parent-child form follows the result:
-  - mostly (a): fill spare slots with section-mates of the top hit, the
-    whole section when it fits;
-  - mostly (b): add neighbouring paragraphs;
-  - mostly (c): parent-child will not help; work on scoring instead.
+- **Status:** Accepted, 2026-10-31; revised the same day after review.
+  Parent-child retrieval is out of scope for the current iteration.
+- **Decision:** `tools/retrieval_eval.py` reports, for each question, the
+  paragraphs of the best-matching reference that the top 5 missed, with
+  their rank in the top 20 and their section, plus the top-20 ranking.
+  Those diagnostics, and reading the failures, inform whether any expansion
+  is worth testing later. No miss category picks an architecture
+  automatically.
+- **Revision:** The first version classified misses as adjacent, same
+  section or unrelated, and let the largest class choose neighbour
+  expansion, section filling or neither. Review pointed out that sharing a
+  30-paragraph "Experiments" section, or being adjacent, does not show
+  that expansion would help under a 5-paragraph limit. It also counted
+  misses over all references, which could report a paragraph as missed
+  when another accepted reference was fully retrieved. Diagnostics now use
+  only the best-matching reference.
 - **Why:** The 5-paragraph limit makes every added context paragraph cost a
   slot. Sections have a median of 2 paragraphs and 82% have at most 5, but
   48% of paragraphs sit in sections with more than 5 (up to 74), so
