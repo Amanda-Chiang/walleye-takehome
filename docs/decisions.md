@@ -148,3 +148,76 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 - **Evidence:** EXPERIMENTS.md C14: indexing the 20-question subset took
   21 s; loading afterwards took 0.07 s with 0 embedding calls, and
   retrieval matched the baseline on 20/20 questions.
+
+## D6: Evaluate retrieval on 100–150 dev questions, answers on the 20
+
+- **Status:** Accepted, 2026-10-31
+- **Decision:** Retrieval-only evaluation (recall@k, no answer model calls)
+  runs on 100–150 dev questions generated with
+  `tools/prepare_data.py --count`. Full end-to-end runs (retrieval plus
+  generation, scored by `tools/score.py`) stay on the shipped 20 unless a
+  change needs more evidence.
+- **Why:** The shipped sample has 15 answerable questions, so one question
+  moves evidence recall by about 7 points (EXPERIMENTS.md 001). Retrieval
+  evaluation only embeds the questions (paragraph vectors are cached), so a
+  larger set costs almost nothing and makes retrieval comparisons stable.
+  End-to-end runs cost one or more chat calls per question and vary from
+  run to run (000 vs 001), so they stay small.
+- **Alternatives:** Only the 20 (cheapest, but too noisy to rank retrieval
+  variants). All ~1,000 dev questions (most stable, but the selection
+  filters in `prepare_data.py` would need checking at that size, and the
+  extra stability is not needed yet).
+- **Cost:** Gold labels for more questions exist on disk, so the rule
+  "gold only for scoring" needs care: the evaluation tool reads gold only
+  after retrieval has finished.
+
+## D7: Build a reranker only if retrieval evaluation shows a gap
+
+- **Status:** Accepted as a gate, 2026-10-31. Not built.
+- **Decision:** Add a reranker only if recall@20 is clearly higher than
+  recall@5 on the D6 retrieval set, i.e. the right paragraph is often found
+  but ranked too low. If the gold paragraph is not in the top 20 either, a
+  reranker cannot help, and the effort goes to scoring and context instead.
+  The `Reranker` interface and `candidate_k` already exist in
+  `ComposedRetriever`, so building one later needs no structural change.
+- **Default if built:** A listwise reranker that asks the existing
+  OpenRouter chat model to order about 20 candidates. No new dependencies,
+  one extra call (about 1–2 s) per question.
+- **Alternatives:** A local cross-encoder (e.g. a BGE reranker): free per
+  call and strong, but it needs PyTorch and a model download, a heavy
+  addition to a standard-library code base. A hosted rerank API (e.g.
+  Cohere, Jina, Voyage): fast, but a second provider and key.
+- **Evidence to collect:** recall@5, @10 and @20 for each retriever config
+  (see EXPERIMENTS.md once the evaluation tool exists).
+
+## D8: Build the agentic retrieval loop last; considerations so far
+
+- **Status:** Deferred, 2026-10-31. To be built after the retriever and
+  generator changes have been measured.
+- **Why last:** A loop repeats whatever the retriever and generator do, so
+  it multiplies their errors and costs. It is easier to judge once each
+  stage is measured on its own.
+- **Where it goes:** A `RAGService` subclass named in the `service` config
+  section. The starter supports this already (its tests include a
+  `RetryOnAbstainService`), and the base class still checks scope and
+  output rules after `run`, so no starter change is expected.
+- **Triggers suggested by run 001:**
+  - The generator abstains, so rewrite the query and retrieve again. 3 of
+    the 4 wrong abstentions in 001 were retrieval misses.
+  - The answer is not supported by its own quotes, so abstain. 4 of the 5
+    missed abstentions in 001 were hedged answers ("the passages do not
+    establish…").
+- **Evidence threshold:** Use a prompted judgment of sufficiency (enough,
+  partial, or not enough, in the style of CRAG's retrieval evaluator), not
+  a numeric cutoff on retrieval scores. Raw cosine and BM25 scores are not
+  comparable across questions: 0.4 means different things for "What is the
+  baseline?" and a long, specific question.
+- **Constraints:** The final answer still uses at most 5 retrieved
+  paragraphs, and every citation must come from them, so retries must
+  choose a final set of 5. Each round adds 1–2 model calls, so latency and
+  cost grow 2–3×. Cap at 1–2 retries. Measure on the 20 end-to-end
+  questions: abstention precision and recall, and coverage of answerable
+  questions.
+- **Open questions:** query rewriting versus searching for missing aspects;
+  whether the sufficiency check and the answer can share one model call;
+  how the loop behaves in all-papers mode.
