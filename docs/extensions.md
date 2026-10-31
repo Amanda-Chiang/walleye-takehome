@@ -7,8 +7,10 @@ Design reasons are in [decisions.md](decisions.md), and results are in
 
 ## Principles
 
-- **The starter is not edited** ([D1](decisions.md#d1-extend-the-starter-through-its-plug-in-points-do-not-edit-it)).
-  Our code plugs into it through the `"class"` keys in config files.
+- **The starter is edited only deliberately** ([D1](decisions.md#d1-extend-the-starter-through-its-plug-in-points-edit-it-only-deliberately)).
+  Our code plugs into it through the `"class"` keys in config files. A
+  starter edit adds a general hook, gets its own test, commit and decision
+  entry, and is listed under "Starter files changed" below.
 - **One strategy per small module.** Trying a new retrieval, chunking or
   embedding idea means adding one class and one config file. Other parts
   stay untouched.

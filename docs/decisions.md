@@ -8,24 +8,37 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 
 ---
 
-## D1: Extend the starter through its plug-in points; do not edit it
+## D1: Extend the starter through its plug-in points; edit it only deliberately
 
-- **Status:** Accepted, 2026-10-31
-- **Decision:** New behavior lives in new modules outside `src/qasper_rag/`
-  and is turned on by naming classes in a config file
-  (`"class": "module:ClassName"`). Starter files stay unchanged. If a change
-  to the starter becomes necessary, it gets its own decision entry
-  explaining why the plug-in points were not enough.
+- **Status:** Accepted, 2026-10-31. Revised the same day: small, deliberate
+  starter edits are allowed (they were not allowed at first).
+- **Decision:** New strategies live in new modules in `src/qasper_agent/`
+  and are turned on by naming classes in a config file
+  (`"class": "module:ClassName"`). The starter (`src/qasper_rag/`,
+  `pyproject.toml`) is edited only when a plug-in point is missing or a
+  workaround would be less clear than a small change. Each edit:
+  - is minimal and general (it adds a hook, and does not put our strategy
+    logic into the starter);
+  - keeps existing behavior and tests passing, with a new test for the
+    hook;
+  - gets its own commit and decision entry.
+
+  `tools/score.py` and `validation/contracts.py` are never changed (see
+  CLAUDE.md).
 - **Why:** The starter already provides the indexing, the output contract,
   quote repair, the CLI, the web page and the scorer, and it has tests. Leaving
   it untouched means every experiment is a config diff against a known
   baseline, `predict`, `answer` and `serve` all run our code without changes,
   and the contract checks in `RAGService` still guard every output.
-- **Alternatives:** Fork and edit `src/qasper_rag/` directly. That is faster
-  for a single change, but it mixes our code with reference code and makes
-  it harder to show exactly what changed.
-- **Cost:** Some work happens inside a retriever that would more naturally
-  happen at index time (see D3).
+- **Alternatives:**
+  - Freely edit `src/qasper_rag/`. Faster for a single change, but it mixes
+    our code with reference code and makes it harder to show exactly what
+    changed.
+  - Never edit it (the first version of this decision). That forced
+    awkward workarounds, e.g. embedding at retriever load because
+    `qasper-rag index` could only embed raw text (D3).
+- **Cost:** Each starter edit needs a short justification and a test.
+  Starter edits so far: `pyproject.toml` (D4).
 
 ## D2: Track every run in a log, with per-question error reports
 
