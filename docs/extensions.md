@@ -9,7 +9,8 @@ Design reasons are in [decisions.md](decisions.md), and results are in
 
 - **The starter is edited only deliberately** ([D1](decisions.md#d1-extend-the-starter-through-its-plug-in-points-edit-it-only-deliberately)).
   Our code plugs into it through the `"class"` keys in config files. A
-  starter edit adds a general hook, gets its own test, commit and decision
+  starter edit (a general hook, or a change where a plug-in would only
+  duplicate the starter, like the prompt) gets its own commit and decision
   entry, and is listed under "Starter files changed" below.
 - **One strategy per small module.** Trying a new retrieval, chunking or
   embedding idea means adding one class and one config file. Other parts
@@ -130,6 +131,7 @@ Starter files changed:
 | `src/qasper_rag/commands/index.py` | Opt-in `prepare_index` hook for custom retrievers | [D5](decisions.md#d5-add-an-opt-in-prepare_index-hook-to-qasper-rag-index) |
 | `docs/baseline.md` | Documents the hook under "Extending the Starter" | D5 |
 | `tests/test_index_hook.py` (new) | Tests the hook | D5 |
+| `src/qasper_rag/pipeline/generation.py` | `PROMPT`: abstain instead of hedging | [D12](decisions.md#d12-fix-abstention-and-answer-length-in-the-starter-prompt) |
 
 ## Planned
 

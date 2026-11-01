@@ -313,20 +313,36 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   numbers, so mentions cannot be linked to captions. The shipped dev sample
   already excluded questions whose evidence is a figure or table.
 
-## D12: Fix abstention and answer length with a generator subclass
+## D12: Fix abstention and answer length in the starter prompt
 
-- **Status:** Accepted, 2026-10-31. Not built.
-- **Decision:** A small `ChatGenerator` subclass with a revised prompt:
-  abstain instead of hedging; answer yes/no questions with only "Yes" or
-  "No" and keep other answers short; name paper IDs only when more than one
-  paper is in scope; and the figure/table rule from D11.
+- **Status:** Accepted, 2026-10-31. Revised 2026-11-01: edit the starter's
+  prompt in place instead of adding a subclass. Built: abstain instead of
+  hedging. Not built yet: short answers, paper names, the figure/table rule.
+- **Decision:** Revise `PROMPT` in `src/qasper_rag/pipeline/generation.py`,
+  one rule per commit: abstain instead of hedging; answer yes/no questions
+  with only "Yes" or "No" and keep other answers short; name paper IDs only
+  when more than one paper is in scope; and the figure/table rule from D11.
+  No cleanup of the model's output after it answers: the prompt alone has
+  to produce the right form.
+- **Why edit the starter:** Our code already relies on the starter for
+  everything except retrieval (generator, service, output checks, CLI), and
+  the prompt is one constant. A subclass would be a second generator that
+  differs only by that string. The starter's original prompt stays in git
+  history (commit `f67a7d2` and earlier), which is what runs 000–005 used.
+- **What the brief asks for:** abstain "even if it could guess", using one
+  of our hedged questions as its example (ASSIGNMENT.md, "Abstaining");
+  "Answer yes/no questions with `Yes` or `No`, and keep other answers
+  short" (docs/data.md, docs/baseline.md); name the paper for each claim
+  when the question spans papers (ASSIGNMENT.md, "Across papers").
 - **Why:** Run 001: 4 of 5 unanswerable questions got hedged answers ("the
   passages do not establish…") instead of abstentions, and the prompt's
   "state which paper_id each claim comes from" made single-paper answers
   wordy ("Yes. Paper 1705.01265 reports…" where the gold is "Yes"), which
   lowers token F1 even when the answer is right.
-- **Measurement:** End-to-end runs on the 20 dev questions: abstention
-  precision and recall, coverage, token F1. Answers vary between runs at
+- **Measurement:** End-to-end runs: abstention precision and recall and
+  coverage first, then answer token F1 read next to the answers themselves,
+  because token F1 understates answers that are right but long or worded
+  differently (docs/evaluation.md). Answers vary between runs at
   temperature 0 (000 vs 001), so small changes need care.
 
 ## D13: Hold off on query rewriting and HyDE

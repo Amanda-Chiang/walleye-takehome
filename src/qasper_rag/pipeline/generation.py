@@ -44,8 +44,11 @@ PROMPT = (
     "(boolean), and citations (list of objects containing only paragraph_id "
     "and quote). Cite only passages that support the answer. Quotes must be "
     "nonempty exact substrings of their paragraphs; use each ID at most once. "
-    "If the evidence is insufficient, return "
+    "If the passages do not answer the question as asked, return "
     '{"answer":"Unanswerable","abstain":true,"citations":[]}. '
+    "Abstain instead of hedging: if your answer would have to say that the "
+    "passages do not state, specify or establish something the question "
+    "asks, abstain. Do not answer a related question instead. "
     "For yes/no questions answer Yes or No. Keep other answers concise. If "
     "passages come from several papers, state which paper_id each claim "
     "comes from.\n"
