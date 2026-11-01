@@ -317,14 +317,19 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 
 - **Status:** Accepted, 2026-10-31. Revised 2026-11-01: edit the starter's
   prompt in place instead of adding a subclass. Built: abstain instead of
-  hedging; short answers and Yes/No. Not built yet: paper names, the
-  figure/table rule.
+  hedging; short answers and Yes/No; paper names only across papers. Not
+  built yet: the figure/table rule.
 - **Decision:** Revise `PROMPT` in `src/qasper_rag/pipeline/generation.py`,
   one rule per commit: abstain instead of hedging; answer yes/no questions
   with only "Yes" or "No" and keep other answers short; name paper IDs only
   when more than one paper is in scope; and the figure/table rule from D11.
   No cleanup of the model's output after it answers: the prompt alone has
-  to produce the right form.
+  to produce the right form. The paper rule is chosen in code by
+  `build_prompt`: a question with several papers in scope gets "state which
+  paper_id each claim comes from", a one-paper question gets "do not
+  mention its paper_id". The starter's single conditional sentence ("If
+  passages come from several papers…") was applied to one-paper answers
+  too.
 - **Why edit the starter:** Our code already relies on the starter for
   everything except retrieval (generator, service, output checks, CLI), and
   the prompt is one constant. A subclass would be a second generator that
