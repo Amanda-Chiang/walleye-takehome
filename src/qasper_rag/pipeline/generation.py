@@ -49,7 +49,10 @@ PROMPT = (
     "Abstain instead of hedging: if your answer would have to say that the "
     "passages do not state, specify or establish something the question "
     "asks, abstain. Do not answer a related question instead. "
-    "For yes/no questions answer Yes or No. Keep other answers concise. If "
+    "For yes/no questions the answer is exactly Yes or No, with nothing "
+    "after it. For other questions give the shortest complete answer: a "
+    "name, number or short phrase rather than a sentence when that is "
+    "enough. The citations carry the support, so do not restate it. If "
     "passages come from several papers, state which paper_id each claim "
     "comes from.\n"
 )

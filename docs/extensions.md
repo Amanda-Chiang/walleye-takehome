@@ -131,7 +131,7 @@ Starter files changed:
 | `src/qasper_rag/commands/index.py` | Opt-in `prepare_index` hook for custom retrievers | [D5](decisions.md#d5-add-an-opt-in-prepare_index-hook-to-qasper-rag-index) |
 | `docs/baseline.md` | Documents the hook under "Extending the Starter" | D5 |
 | `tests/test_index_hook.py` (new) | Tests the hook | D5 |
-| `src/qasper_rag/pipeline/generation.py` | `PROMPT`: abstain instead of hedging | [D12](decisions.md#d12-fix-abstention-and-answer-length-in-the-starter-prompt) |
+| `src/qasper_rag/pipeline/generation.py` | `PROMPT`: abstain instead of hedging; exactly Yes or No, short answers | [D12](decisions.md#d12-fix-abstention-and-answer-length-in-the-starter-prompt) |
 
 ## Planned
 

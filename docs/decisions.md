@@ -317,7 +317,8 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 
 - **Status:** Accepted, 2026-10-31. Revised 2026-11-01: edit the starter's
   prompt in place instead of adding a subclass. Built: abstain instead of
-  hedging. Not built yet: short answers, paper names, the figure/table rule.
+  hedging; short answers and Yes/No. Not built yet: paper names, the
+  figure/table rule.
 - **Decision:** Revise `PROMPT` in `src/qasper_rag/pipeline/generation.py`,
   one rule per commit: abstain instead of hedging; answer yes/no questions
   with only "Yes" or "No" and keep other answers short; name paper IDs only
