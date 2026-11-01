@@ -184,7 +184,7 @@ def best_paragraphs(paragraph_ids: list[str], scores: list[float]) -> list[str]:
     """
     best: dict[str, float] = {}
     for paragraph_id, score in zip(paragraph_ids, scores, strict=True):
-        if paragraph_id not in best or score > best[paragraph_id]:
-            best[paragraph_id] = score
-    first_seen = {pid: i for i, pid in reversed(list(enumerate(paragraph_ids)))}
-    return sorted(best, key=lambda pid: (-best[pid], first_seen[pid]))
+        best[paragraph_id] = max(best.get(paragraph_id, float("-inf")), score)
+    # The dict keeps first-seen order and sorting is stable, so ties stay
+    # in that order.
+    return sorted(best, key=lambda pid: -best[pid])

@@ -117,6 +117,8 @@ class PartTests(unittest.TestCase):
 
     def test_best_paragraphs_takes_max_and_breaks_ties_by_position(self):
         self.assertEqual(best_paragraphs(["x", "y", "x", "z"], [1, 2, 3, 2]), ["x", "y", "z"])
+        # Ties follow first appearance, not ID order.
+        self.assertEqual(best_paragraphs(["z", "y", "z"], [1, 1, 0]), ["z", "y"])
 
     def test_build_component_uses_default_or_named_class(self):
         self.assertIsInstance(build_component("fusion", None, ReciprocalRankFusion), ReciprocalRankFusion)
