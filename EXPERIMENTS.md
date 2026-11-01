@@ -527,3 +527,58 @@ the application does.
   wordiness), since they now limit the end-to-end score; then stopword
   removal for BM25; then, if justified, a reranker test (D7 headroom) or
   section-aware expansion for lists (D10).
+
+---
+
+## 006: Cross-paper smoke check (3 questions, no paper ID)
+
+- **Date:** 2026-11-01
+- **Commit:** `605b762` (hybrid retriever; prompt with the three D12
+  changes)
+- **Why:** The brief asks the agent to answer across all papers when no
+  paper is given, but every question in our evaluation names one paper. No
+  cross-paper gold exists, so this is a read-the-output check, not a
+  metric.
+- **Commands:** for each question,
+  `qasper-rag answer --index-dir .index-full --config config/composed-hybrid.json --question "..."`
+- **Questions:** the brief's GloVe example, plus two topics where one paper
+  dominates the matching text, chosen to test crowding (counts from a
+  regex over `data/corpus.jsonl`): sarcasm (12 papers; one has 41 matching
+  paragraphs, another 32) and XNLI (6 papers; one has 18).
+- **Results:** [006-cross-paper-smoke.jsonl](experiments/runs/006-cross-paper-smoke.jsonl)
+  (the three `answer` outputs).
+
+| Question | Papers in top 5 | Paragraphs from the top paper | Captions | Cited papers | Latency |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Which papers use pre-trained GloVe embeddings, and for what? | 5 | 1 | 1 | 4 | 3.4 s |
+| Which papers study sarcasm detection, and what data do they use? | 2 | 4 | 0 | 2 | 2.8 s |
+| Which papers evaluate on XNLI? | 2 | 4 | 2 | 2 | 2.3 s |
+
+### What the outputs show
+
+- **The mechanics work:** with no paper ID, the service searches all 281
+  papers, every quote passed the output check, and each claim names its
+  paper (the D12 paper rule applies, since several papers are in scope).
+- **GloVe is good:** 4 different papers, each with a quote that supports
+  its "for what" ("We initialize word embeddings using the 300-dimension
+  GloVe vectors"). The fifth slot went to a caption.
+- **Crowding is real (2 of 3):** for sarcasm and XNLI, one paper took 4 of
+  the 5 slots, so the answer names only 2 papers. At least 4 other papers
+  match XNLI (e.g. `2002.07306`, 8 matching paragraphs) and several match
+  sarcasm. For XNLI, 2 of the 4 slots were captions.
+- **Five paragraphs cap "which papers" questions:** 66 papers mention
+  GloVe, so a complete list is impossible within the output contract. The
+  answer can only be "some papers that…".
+- **Answer form:** the XNLI answer is bare IDs ("2004.04721; 1909.03405"),
+  which follows the short-answer rule but is less readable than titles.
+  The sarcasm answer is vague ("a sarcasm corpus").
+
+### Decision
+
+- Document the limits in the writeup: at most 5 passages, so "which
+  papers" answers are partial, and a paper with many matching paragraphs
+  can crowd out others.
+- Candidate small fix, not built: cap passages per paper (e.g. at most 2)
+  only when several papers are in scope. It would not change single-paper
+  evaluation. It needs a few more cross-paper questions to judge, since
+  sometimes one paper really does hold most of the evidence.
