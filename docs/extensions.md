@@ -131,6 +131,7 @@ Starter files changed:
 | `pyproject.toml` | Installs `qasper_agent` too | [D4](decisions.md#d4-put-our-code-in-srcqasper_agent-next-to-the-starter) |
 | `src/qasper_rag/commands/index.py` | Opt-in `prepare_index` hook for custom retrievers | [D5](decisions.md#d5-add-an-opt-in-prepare_index-hook-to-qasper-rag-index) |
 | `docs/baseline.md` | Documents the hook under "Extending the Starter" | D5 |
+| `README.md` | "Our Implementation" section with commands for the hybrid config; layout lists our folders. The CLI defaults stay on `config/baseline.json` | [D15](decisions.md#d15-default-retriever-hybrid-bm25--dense) |
 | `tests/test_index_hook.py` (new) | Tests the hook | D5 |
 | `src/qasper_rag/pipeline/generation.py` | `PROMPT`: abstain instead of hedging; exactly Yes or No, short answers. `build_prompt`: name papers only when several are in scope | [D12](decisions.md#d12-fix-abstention-and-answer-length-in-the-starter-prompt) |
 | `tests/test_generation.py` (new) | Tests the paper rule and that the generator sends `build_prompt`'s message | D12 |

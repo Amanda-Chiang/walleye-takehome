@@ -18,6 +18,47 @@ rules, how we evaluate, and what to submit.
 `CLAUDE.md` is a short guide for coding agents such as Claude Code. It
 repeats the rules and the main commands.
 
+## Our Implementation
+
+The agent we built uses hybrid retrieval: BM25 and dense embeddings, fused
+by reciprocal rank fusion. It is set up in `config/composed-hybrid.json`;
+the starter's `config/baseline.json` stays as the reference baseline.
+Retrieval code is in `src/qasper_agent/`. The answer prompt is the
+starter's, revised (D12).
+
+The `qasper-rag` commands default to the baseline config, so pass the
+hybrid config explicitly:
+
+```bash
+python -m pip install --editable .
+export OPENROUTER_API_KEY='<your key>'
+
+# Once: embeds all 15,757 paragraphs (a few minutes; cached afterwards)
+qasper-rag index --corpus data/corpus.jsonl \
+  --config config/composed-hybrid.json --index-dir .index-full
+
+# One question across all papers, or within one paper with --paper-id
+qasper-rag answer --index-dir .index-full --config config/composed-hybrid.json \
+  --question "Which papers use GloVe embeddings?"
+
+# Chat page at http://127.0.0.1:8000
+qasper-rag serve --index-dir .index-full --config config/composed-hybrid.json
+
+# Retrieval only on 120 dev questions (no answer-model calls)
+python tools/retrieval_eval.py --config config/composed-hybrid.json \
+  --index-dir .index-full --questions data/eval-120/dev_questions.jsonl \
+  --gold data/eval-120/dev_gold.jsonl --output results/hybrid-retrieval.json
+```
+
+Where to read more:
+
+- [docs/extensions.md](docs/extensions.md): what we added, how the parts
+  fit, and every starter file we changed.
+- [docs/decisions.md](docs/decisions.md): design decisions and their
+  reasons.
+- [EXPERIMENTS.md](EXPERIMENTS.md): every evaluated configuration, its
+  results and the failures read.
+
 ## Quickstart with the Baseline
 
 You need Python 3.10 or later and an [OpenRouter](https://openrouter.ai) API
@@ -51,10 +92,14 @@ ASSIGNMENT.md     the task
 CLAUDE.md         guide for coding agents
 docs/             data, evaluation and baseline reference pages
 data/             the papers, plus questions and gold answers for evaluation
-src/qasper_rag/   the baseline agent
-config/           baseline settings
-tools/            scoring, RAGAS, subset, and data download tools
+src/qasper_rag/   the baseline agent (generator prompt revised, index hook added)
+src/qasper_agent/ our retrieval: BM25, dense scoring, fusion, composed retriever
+config/           baseline settings, and our composed-*.json configs
+tools/            scoring, RAGAS, subset, data download, retrieval_eval and error_analysis tools
 tests/            unit tests, and a tiny corpus in tests/fixtures/
+data/eval-120/    120 dev questions and gold used for retrieval evaluation
+experiments/runs/ per-run error reports and metrics
+EXPERIMENTS.md    experiment log
 ```
 
 The papers come from [QASPER](https://allenai.org/data/qasper) v0.3 by the
