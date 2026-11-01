@@ -111,8 +111,9 @@ the same `--index-dir`: only new text gets embedded.
 | `config/composed-bm25.json` | BM25 only; no API calls |
 | `config/composed-dense-section.json`, `composed-bm25-section.json`, `composed-hybrid-section.json` | The dense, BM25 and hybrid configs with section titles in the index text; each differs from its raw-text config only in `index_text` (D9) |
 | `config/composed-hybrid.json` | BM25 + dense, reciprocal rank fusion. Differs from `composed-dense.json` only by the added BM25 scorer |
-| `src/qasper_agent/retrieval/bm25.py` | `BM25Scorer` (Okapi BM25, standard library) and its `tokenize` (lowercase, alphanumeric tokens, plural "s" dropped) |
-| `tests/test_bm25.py` | Tests for tokenizing, BM25 scoring, RRF without credit for non-matches, hybrid ranking, the paper filter, and top-k prefix consistency |
+| `config/composed-bm25-stopwords.json`, `composed-hybrid-stopwords.json` | The BM25 and hybrid configs with `"stopwords": true` on the BM25 scorer (EXPERIMENTS.md 007) |
+| `src/qasper_agent/retrieval/bm25.py` | `BM25Scorer` (Okapi BM25, standard library) and its `tokenize` (lowercase, alphanumeric tokens, plural "s" dropped). Optional `stopwords` setting drops `STOPWORDS` from queries only |
+| `tests/test_bm25.py` | Tests for tokenizing, query stopwords, BM25 scoring, RRF without credit for non-matches, hybrid ranking, the paper filter, and top-k prefix consistency |
 | `tests/test_composed_retriever.py` | Tests for the parts, scope, `top_k`, chunk rollup, reranking, index-time caching, and parity with the starter retriever |
 | `data/eval-120/` | 120 dev questions (100 answerable, 20 unanswerable, 94 papers) and gold, made with `tools/prepare_data.py --count 120 --abstentions 20`. A superset of the shipped 20. Used for retrieval evaluation (D6). Gold is for scoring only |
 | `tools/retrieval_eval.py` | Retrieval-only evaluation for any retriever config: recall@5/10/20 (best reference per depth, as `score.py`), each question's top-20 ranking, and the paragraphs of its best-matching reference (chosen at recall@5) that the top 5 missed, with rank and section. Reads gold only after retrieval. No answer-model calls |
@@ -138,6 +139,6 @@ Starter files changed:
 
 ## Planned
 
-- Stopword removal for BM25 queries, the first candidate from
-  EXPERIMENTS.md 003 (weak function-word matches cause most hybrid losses).
+Nothing scheduled. Candidates are listed at the end of the latest
+EXPERIMENTS.md entry.
 
