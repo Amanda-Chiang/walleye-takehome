@@ -38,7 +38,7 @@ together from parts, each named in the `retriever` config section
 
 ```text
 indexing (once, when the retriever loads)
-  paragraph ─► Chunker.split ─► pieces ─► TextView.render ─► Unit
+  paragraph ─► Chunker.split ─► pieces ─► IndexText.render ─► Unit
   all units ─► each Scorer.fit           (BM25 counts, embeddings, ...)
 
 per question
@@ -50,13 +50,13 @@ per question
 | Part | Interface (`retrieval/base.py`) | Implementations | Config key |
 | --- | --- | --- | --- |
 | Chunker | `split(paragraph) -> list[str]` | `chunkers:WholeParagraph` | `chunker` (default `WholeParagraph`) |
-| Text view | `render(paragraph, piece) -> str` | `views:RawText`, `views:SectionPrefixed` | `view` (default `RawText`) |
+| Index text | `render(paragraph, piece) -> str`: the text scorers search | `index_text:RawText`, `index_text:SectionPrefixed` | `index_text` (default `RawText`) |
 | Scorer | `fit(units)`, `score(query, candidates) -> list[float]`; exactly 0 means no match | `dense:DenseScorer`, `bm25:BM25Scorer` | `scorers` (list, required) |
 | Fusion | `fuse(score_lists) -> list[float]` | `fusion:ReciprocalRankFusion` (no credit for a score of 0; equal scores share a rank) | `fusion` (default RRF, `k` = 60) |
 | Reranker | `rerank(question, passages) -> list[passage]` | none yet | `reranker` (optional), with `candidate_k` |
 
 Units always keep their `paragraph_id`, and the retriever returns the
-original paragraph dicts. That is why chunking and text views cannot break
+original paragraph dicts. That is why chunking and index text cannot break
 the output contract.
 
 `config/composed-dense.json` sets up the baseline's behavior from these
@@ -66,7 +66,7 @@ point for every retrieval experiment.
 ### Adding a New Strategy
 
 1. Write a class with the interface from the table in the matching module,
-   e.g. a `SectionPrefixed` view in `retrieval/views.py`. Read options from
+   e.g. a `SectionPrefixed` index text in `retrieval/index_text.py`. Read options from
    `settings`.
 2. Copy `config/composed-dense.json` to a new config and change only that
    part's `class` (one change per config makes comparisons clean).
@@ -77,7 +77,7 @@ point for every retrieval experiment.
 
 `DenseScorer` embeds units through the starter's cache
 (`<index_dir>/embedding-cache.sqlite`). Cache keys include the model
-settings and the exact text, so a new view or chunker embeds only new text,
+settings and the exact text, so new index text or a new chunker embeds only new text,
 and models never mix.
 
 ### Building an Index
@@ -93,7 +93,7 @@ qasper-rag index --corpus data/corpus.jsonl \
 ```
 
 `predict`, `answer` and `serve` then load from the cache. If a config
-changes the text view, chunker or embedding model, rerun the command on
+changes the index text, chunker or embedding model, rerun the command on
 the same `--index-dir`: only new text gets embedded.
 
 ## Files We Added
@@ -101,15 +101,15 @@ the same `--index-dir`: only new text gets embedded.
 | Path | Role |
 | --- | --- |
 | `src/qasper_agent/components.py` | `build_component`: builds a part from its config section, using the starter's `load_class` |
-| `src/qasper_agent/retrieval/base.py` | `Unit` and the part interfaces (`Chunker`, `TextView`, `Scorer`, `Fusion`, `Reranker`) |
+| `src/qasper_agent/retrieval/base.py` | `Unit` and the part interfaces (`Chunker`, `IndexText`, `Scorer`, `Fusion`, `Reranker`) |
 | `src/qasper_agent/retrieval/composed.py` | `ComposedRetriever` and `best_paragraphs` (rolls chunk scores up to paragraphs) |
 | `src/qasper_agent/retrieval/chunkers.py` | Chunkers |
-| `src/qasper_agent/retrieval/views.py` | Text views |
+| `src/qasper_agent/retrieval/index_text.py` | Index text: what text scorers search for each paragraph (raw, or section title first). Named `views.py` / `TextView` / `"view"` before 2026-11-01 |
 | `src/qasper_agent/retrieval/dense.py` | `DenseScorer` (embeddings, cosine similarity). Paragraph and question embeddings both go through the starter's cache, so reruns use identical vectors ([D14](decisions.md#d14-cache-question-embeddings-in-densescorer)) |
 | `src/qasper_agent/retrieval/fusion.py` | `ReciprocalRankFusion` |
 | `config/composed-dense.json` | The baseline built from composed parts; reference for retrieval experiments |
 | `config/composed-bm25.json` | BM25 only; no API calls |
-| `config/composed-dense-section.json`, `composed-bm25-section.json`, `composed-hybrid-section.json` | The dense, BM25 and hybrid configs with the section-title view; each differs from its raw-text config only in `view` (D9) |
+| `config/composed-dense-section.json`, `composed-bm25-section.json`, `composed-hybrid-section.json` | The dense, BM25 and hybrid configs with section titles in the index text; each differs from its raw-text config only in `index_text` (D9) |
 | `config/composed-hybrid.json` | BM25 + dense, reciprocal rank fusion. Differs from `composed-dense.json` only by the added BM25 scorer |
 | `src/qasper_agent/retrieval/bm25.py` | `BM25Scorer` (Okapi BM25, standard library) and its `tokenize` (lowercase, alphanumeric tokens, plural "s" dropped) |
 | `tests/test_bm25.py` | Tests for tokenizing, BM25 scoring, RRF without credit for non-matches, hybrid ranking, the paper filter, and top-k prefix consistency |

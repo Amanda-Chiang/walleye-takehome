@@ -5,8 +5,8 @@
     "chunker": {
       "class": "qasper_agent.retrieval.chunkers:WholeParagraph"
     },
-    "view": {
-      "class": "qasper_agent.retrieval.views:SectionPrefixed"
+    "index_text": {
+      "class": "qasper_agent.retrieval.index_text:SectionPrefixed"
     },
     "scorers": [
       {

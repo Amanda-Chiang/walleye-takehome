@@ -1,4 +1,4 @@
-"""A retriever assembled from a chunker, a text view, scorers and fusion.
+"""A retriever assembled from a chunker, index text, scorers and fusion.
 
 Each part is named in the ``retriever`` config section, so one part can be
 changed without touching the others::
@@ -6,7 +6,7 @@ changed without touching the others::
     "retriever": {
       "class": "qasper_agent.retrieval.composed:ComposedRetriever",
       "chunker": {"class": "qasper_agent.retrieval.chunkers:WholeParagraph"},
-      "view": {"class": "qasper_agent.retrieval.views:RawText"},
+      "index_text": {"class": "qasper_agent.retrieval.index_text:RawText"},
       "scorers": [{"class": "qasper_agent.retrieval.dense:DenseScorer",
                    "embedding": {...}}],
       "fusion": {"class": "qasper_agent.retrieval.fusion:ReciprocalRankFusion"},
@@ -31,7 +31,7 @@ from qasper_agent.components import build_component
 from qasper_agent.retrieval.base import Passage, Question, Unit
 from qasper_agent.retrieval.chunkers import WholeParagraph
 from qasper_agent.retrieval.fusion import ReciprocalRankFusion
-from qasper_agent.retrieval.views import RawText
+from qasper_agent.retrieval.index_text import RawText
 from qasper_rag.config import ConfigurationError
 
 
@@ -63,7 +63,9 @@ class ComposedRetriever:
         self.chunker = build_component(
             "chunker", settings.get("chunker"), WholeParagraph
         )
-        self.view = build_component("view", settings.get("view"), RawText)
+        self.index_text = build_component(
+            "index_text", settings.get("index_text"), RawText
+        )
         self.fusion = build_component(
             "fusion", settings.get("fusion"), ReciprocalRankFusion
         )
@@ -105,7 +107,11 @@ class ComposedRetriever:
 
     def _make_units(self) -> list[Unit]:
         return [
-            Unit(p["paragraph_id"], p["paper_id"], self.view.render(p, piece))
+            Unit(
+                p["paragraph_id"],
+                p["paper_id"],
+                self.index_text.render(p, piece),
+            )
             for p in self.paragraphs.values()
             for piece in self.chunker.split(p)
         ]

@@ -2,13 +2,13 @@
 
 A paragraph goes through the parts in this order::
 
-    paragraph ─► Chunker.split ─► pieces ─► TextView.render ─► Unit.text
+    paragraph ─► Chunker.split ─► pieces ─► IndexText.render ─► Unit.text
     question  ─► each Scorer.score(units) ─► Fusion.fuse ─► best paragraphs
               ─► Reranker.rerank (optional) ─► top_k paragraphs
 
 Constructors, as ``ComposedRetriever`` calls them:
 
-- ``TextView(settings)``, ``Chunker(settings)``, ``Fusion(settings)`` and
+- ``IndexText(settings)``, ``Chunker(settings)``, ``Fusion(settings)`` and
   ``Reranker(settings)``.
 - ``Scorer(settings, index_dir)``. ``index_dir`` is where a scorer may cache
   what it builds, e.g. embeddings.
@@ -52,8 +52,8 @@ class Chunker(Protocol):
         ...
 
 
-class TextView(Protocol):
-    """Decide what text represents one piece of a paragraph."""
+class IndexText(Protocol):
+    """Decide what text is indexed for one piece of a paragraph."""
 
     def render(self, paragraph: Passage, piece: str) -> str:
         """Return the text to index for ``piece`` of ``paragraph``."""

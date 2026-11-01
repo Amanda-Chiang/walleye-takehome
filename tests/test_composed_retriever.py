@@ -10,7 +10,7 @@ from qasper_agent.retrieval.base import Unit
 from qasper_agent.retrieval.dense import DenseScorer
 from qasper_agent.retrieval.composed import ComposedRetriever, best_paragraphs
 from qasper_agent.retrieval.fusion import ReciprocalRankFusion
-from qasper_agent.retrieval.views import SectionPrefixed
+from qasper_agent.retrieval.index_text import SectionPrefixed
 from qasper_rag.commands.index import build_index
 from qasper_rag.config import ConfigurationError
 from qasper_rag.pipeline.retrieval import EmbeddingRetriever
@@ -151,7 +151,7 @@ class DenseQueryCacheTests(unittest.TestCase):
             self.assertEqual(embed.call_count, calls_after_fit + 2)
 
 
-class SectionViewTests(unittest.TestCase):
+class SectionIndexTextTests(unittest.TestCase):
     def test_puts_the_section_path_before_the_text(self):
         paragraph = {"section": "Results ::: Parsing", "text": "LAS is 80."}
         self.assertEqual(SectionPrefixed({}).render(paragraph, "LAS is 80."),
@@ -169,10 +169,10 @@ class SectionViewTests(unittest.TestCase):
              "text": "We compare our approach to two other systems."},
         ]
         bm25 = [{"class": "qasper_agent.retrieval.bm25:BM25Scorer"}]
-        view = {"class": "qasper_agent.retrieval.views:SectionPrefixed"}
+        index_text = {"class": "qasper_agent.retrieval.index_text:SectionPrefixed"}
         question = {"question": "What baseline is used?", "paper_ids": ["x"]}
         raw = ComposedRetriever(paragraphs, {"scorers": bm25}, "unused")
-        section = ComposedRetriever(paragraphs, {"scorers": bm25, "view": view}, "unused")
+        section = ComposedRetriever(paragraphs, {"scorers": bm25, "index_text": index_text}, "unused")
         self.assertEqual(raw.retrieve(question, 1)[0]["paragraph_id"], "x:p00000")
         self.assertIs(section.retrieve(question, 1)[0], paragraphs[1])
 

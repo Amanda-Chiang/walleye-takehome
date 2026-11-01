@@ -60,7 +60,7 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   (EXPERIMENTS.md, C11).
 - **Decision:** Split retrieval into roles that can each be replaced from
   config without touching the others:
-  - **Text view:** what text represents a paragraph when indexing it, e.g.
+  - **Index text:** what text is indexed for a paragraph, e.g.
     the raw text, or the section title followed by the text.
   - **Chunker:** splits a paragraph into smaller indexed units that keep
     their parent `paragraph_id`, e.g. one unit per paragraph or overlapping
@@ -86,7 +86,7 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   `index_dir`. At first this happened when the retriever loaded; since D5
   it happens at index time.
 - **Interface choices made while building it:**
-  - Chunkers split *before* the text view renders, so a view such as
+  - Chunkers split *before* the index text is rendered, so a rule such as
     "section title + text" applies to every chunk, not only the first.
   - Scorers receive candidate *positions* (indices into the fitted units),
     not unit objects. This keeps the per-paper filter in one place (the
@@ -238,14 +238,14 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
 
 - **Status:** Measured 2026-10-31 (EXPERIMENTS.md 004): **not adopted.**
   `SectionPrefixed` is built and kept as an option, but the default configs
-  stay on raw text. With each scorer the view helped about as many
+  stay on raw text. With each scorer section titles helped about as many
   questions as it hurt (BM25 3 vs 3, dense 9 vs 8, hybrid 7 vs 6), and
   recall@5 moved by at most +0.01. It fixed the targeted misses ("What
   baseline is used?", "surface-level features"), but a section title is
   shared by every paragraph in the section, so a matching title also lifts
   that section's other paragraphs and pushes evidence elsewhere down.
   LLM-written context (the alternative below) is not pursued for now.
-- **Decision:** Test a contextual text view that puts the section path in
+- **Decision:** Test index text that puts the section path in
   front of each paragraph before it is indexed (e.g. "Baseline Approaches:
   We compare our approach to two other…"), and keep it only if recall
   improves on the D6 retrieval set. The paper title is left out for now: it
@@ -260,7 +260,7 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   Contextual Retrieval): richer, but about 15.7k LLM calls to index the
   corpus. Only worth trying if the free, deterministic section prefix helps
   and leaves a gap.
-- **Cost:** About 15 lines (a `TextView` class) and one re-index (well under
+- **Cost:** About 15 lines (an `IndexText` class) and one re-index (well under
   one cent of embeddings). BM25 picks it up with no extra cost.
 
 ## D10: Parent-child retrieval: diagnose first, no automatic choice

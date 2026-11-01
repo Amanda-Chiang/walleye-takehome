@@ -14,6 +14,11 @@ cp results/<run>/metrics.json experiments/runs/<NNN>-<name>.metrics.json
 `results/` is gitignored, so the reports and metrics copied into
 `experiments/runs/` are the durable record.
 
+**Renamed parts:** entries up to 005 call the index-text part a "text
+view" (`views.py`, `TextView`, config key `"view"`). It was renamed to
+`index_text.py`, `IndexText` and `"index_text"` on 2026-11-01, with no
+change in behavior.
+
 **Outcome tags** (assigned mechanically by `tools/error_analysis.py`):
 
 | Tag | Meaning |

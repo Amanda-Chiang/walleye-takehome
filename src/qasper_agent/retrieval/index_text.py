@@ -1,4 +1,8 @@
-"""Text views: decide what text represents a piece of a paragraph."""
+"""Index text: decide what text is indexed for a piece of a paragraph.
+
+Scorers search this text, but the retriever always returns the original
+paragraph, so answers and quotes are unaffected.
+"""
 
 from __future__ import annotations
 
