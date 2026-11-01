@@ -425,3 +425,22 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   unchanged and the result is attributable to the stopwords alone. The
   plural rule was not changed in the same experiment (it has its own known
   flaw, noted in EXPERIMENTS.md 003).
+
+## D17: No per-paper cap for cross-paper retrieval
+
+- **Status:** Measured 2026-11-01 (EXPERIMENTS.md 008): **not adopted.**
+- **Decision:** Keep the plain top 5 across all papers. No per-paper limit
+  in `ComposedRetriever`.
+- **Why:** On 10 broad cross-paper questions, at most 2 passages per paper
+  added relevant papers to 4 questions (fake news 1 → 3 papers; XNLI,
+  ROUGE, ELMo +1 each) but added irrelevant evidence to 2 narrow ones
+  (sarcasm, CrowdFlower). Every dropped passage was relevant. The cap also
+  applies to every multi-paper query, including specific questions asked
+  without a paper ID, where it would force in unrelated papers; separating
+  the two needs query routing, which is out of scope.
+- **Limitation recorded:** across all papers the answer sees 5 passages,
+  so "which papers" answers are partial and one paper can crowd out
+  others (EXPERIMENTS.md 006, 008).
+- **Revisit if:** a larger cross-paper set, judged by someone other than
+  the builder, shows a consistent gain, or list-style questions can be
+  recognized cheaply.

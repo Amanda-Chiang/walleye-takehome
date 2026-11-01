@@ -1,0 +1,606 @@
+{
+  "config": "config/composed-hybrid.json",
+  "per_paper": 2,
+  "questions": [
+    {
+      "question_id": "cross-01",
+      "question": "Which papers use pre-trained GloVe embeddings, and for what?",
+      "plain": [
+        {
+          "paragraph_id": "1809.00530:p00038",
+          "section": "Training Details and Hyper-parameters",
+          "text": "We initialize word embeddings using the 300-dimension GloVe vectors supplied by Pennington et al., ( BIBREF28 ), which were trained on 840 billion tokens from the Common Crawl. For each pair of domains, the vocabulary consists of the top 10000 most frequent words. For words in the vocabulary but not present in the pre-trained embeddings, we randomly initialize them."
+        },
+        {
+          "paragraph_id": "1701.02962:p00052",
+          "section": "Caption",
+          "text": "Table 5: Comparing pre-trained GloVe and dLCE word embeddings."
+        },
+        {
+          "paragraph_id": "1707.06806:p00027",
+          "section": "Embeddings",
+          "text": "As a text embedding in our experiments, we use publicly available GloVe word vectors BIBREF16 pre-trained on two datasets: Wikipedia 2014 with Gigaword5 (W+G5) and Common Crawl (CC). Since their output dimensionality can be modified, we show the results for varying dimensionality sizes. On top of that, we evaluate two training approaches: using static word vectors and fine-tuning them during training phase."
+        },
+        {
+          "paragraph_id": "2001.05865:p00003",
+          "section": "Models",
+          "text": "Common to all the models, we initialize our embedding matrix with pre-trained Glove word vectors of 300 dimensions using 6B tokens . Out of 11319 tokens present in the dataset, we found 188 tokens missing from the pre-trained Glove embeddings, so we manually map these tokens to words conveying semantically similar meaning, e.g. we map over ten variations of the word \u201cyes\u201d - misspelled or not picked up by tokenizer - \u201c*yes\", \u201cyesa\", \u201cyess\", \u201cytes\", \u201cyes-\", \u201cyes3\", \u201cyyes\", \u201cyees\", etc."
+        },
+        {
+          "paragraph_id": "1909.13714:p00004",
+          "section": "Methodology",
+          "text": "Speech Embeddings: We incorporated pre-trained speech embeddings (Speech2Vec BIBREF8) as features, trained on a corpus of 500 hours of speech from LibriSpeech. Speech2Vec is considered as a speech version of Word2Vec BIBREF9 which is compared with Word2Vec vectors trained on the transcript of the same speech corpus. We experimented with concatenating word and speech embeddings by using pre-trained GloVe embeddings (6B tokens, 400K vocab, dim=100), Speech2Vec embeddings (37.6K vocab, dim=100), and its Word2Vec counterpart (37.6K vocab, dim=100)."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1809.00530:p00038",
+          "section": "Training Details and Hyper-parameters",
+          "text": "We initialize word embeddings using the 300-dimension GloVe vectors supplied by Pennington et al., ( BIBREF28 ), which were trained on 840 billion tokens from the Common Crawl. For each pair of domains, the vocabulary consists of the top 10000 most frequent words. For words in the vocabulary but not present in the pre-trained embeddings, we randomly initialize them."
+        },
+        {
+          "paragraph_id": "1701.02962:p00052",
+          "section": "Caption",
+          "text": "Table 5: Comparing pre-trained GloVe and dLCE word embeddings."
+        },
+        {
+          "paragraph_id": "1707.06806:p00027",
+          "section": "Embeddings",
+          "text": "As a text embedding in our experiments, we use publicly available GloVe word vectors BIBREF16 pre-trained on two datasets: Wikipedia 2014 with Gigaword5 (W+G5) and Common Crawl (CC). Since their output dimensionality can be modified, we show the results for varying dimensionality sizes. On top of that, we evaluate two training approaches: using static word vectors and fine-tuning them during training phase."
+        },
+        {
+          "paragraph_id": "2001.05865:p00003",
+          "section": "Models",
+          "text": "Common to all the models, we initialize our embedding matrix with pre-trained Glove word vectors of 300 dimensions using 6B tokens . Out of 11319 tokens present in the dataset, we found 188 tokens missing from the pre-trained Glove embeddings, so we manually map these tokens to words conveying semantically similar meaning, e.g. we map over ten variations of the word \u201cyes\u201d - misspelled or not picked up by tokenizer - \u201c*yes\", \u201cyesa\", \u201cyess\", \u201cytes\", \u201cyes-\", \u201cyes3\", \u201cyyes\", \u201cyees\", etc."
+        },
+        {
+          "paragraph_id": "1909.13714:p00004",
+          "section": "Methodology",
+          "text": "Speech Embeddings: We incorporated pre-trained speech embeddings (Speech2Vec BIBREF8) as features, trained on a corpus of 500 hours of speech from LibriSpeech. Speech2Vec is considered as a speech version of Word2Vec BIBREF9 which is compared with Word2Vec vectors trained on the transcript of the same speech corpus. We experimented with concatenating word and speech embeddings by using pre-trained GloVe embeddings (6B tokens, 400K vocab, dim=100), Speech2Vec embeddings (37.6K vocab, dim=100), and its Word2Vec counterpart (37.6K vocab, dim=100)."
+        }
+      ],
+      "plain_papers": 5,
+      "capped_papers": 5
+    },
+    {
+      "question_id": "cross-02",
+      "question": "Which papers study sarcasm detection, and what data do they use?",
+      "plain": [
+        {
+          "paragraph_id": "1610.08815:p00012",
+          "section": "Sentiment Analysis and Sarcasm Detection",
+          "text": "Sarcasm detection is an important subtask of sentiment analysis BIBREF27 . Since sarcastic sentences are subjective, they carry sentiment and emotion-bearing information. Most of the studies in the literature BIBREF28 , BIBREF29 , BIBREF9 , BIBREF30 include sentiment features in sarcasm detection with the use of a state-of-the-art sentiment lexicon. Below, we explain how sentiment information is key to express sarcastic opinions and the approach we undertake to exploit such information for sarcasm detection."
+        },
+        {
+          "paragraph_id": "1610.08815:p00006",
+          "section": "Introduction",
+          "text": "The rest of the paper is organized as follows: Section SECREF2 proposes a brief literature review on sarcasm detection; Section SECREF4 presents the proposed approach; experimental results and thorough discussion on the experiments are given in Section SECREF5 ; finally, Section SECREF6 concludes the paper."
+        },
+        {
+          "paragraph_id": "1610.08815:p00005",
+          "section": "Introduction",
+          "text": "Existing works on sarcasm detection have mainly focused on unigrams and the use of emoticons BIBREF1 , BIBREF2 , BIBREF3 , unsupervised pattern mining approach BIBREF4 , semi-supervised approach BIBREF5 and n-grams based approach BIBREF6 , BIBREF7 , BIBREF8 , BIBREF9 with sentiment features. Instead, we propose a framework that learns sarcasm features automatically from a sarcasm corpus using a convolutional neural network (CNN). We also investigate whether features extracted using the pre-trained sentiment, emotion and personality models can improve sarcasm detection performance. Our approach uses relatively lower dimensional feature vectors and outperforms the state of the art on different datasets. In summary, the main contributions of this paper are the following:"
+        },
+        {
+          "paragraph_id": "1610.08815:p00016",
+          "section": "The Proposed Framework",
+          "text": "As discussed in the literature BIBREF5 , sarcasm detection may depend on sentiment and other cognitive aspects. For this reason, we incorporate both sentiment and emotion clues in our framework. Along with these, we also argue that personality of the opinion holder is an important factor for sarcasm detection. In order to address all of these variables, we create different models for each of them, namely: sentiment, emotion and personality. The idea is to train each model on its corresponding benchmark dataset and, hence, use such pre-trained models together to extract sarcasm-related features from the sarcasm datasets."
+        },
+        {
+          "paragraph_id": "1701.05574:p00033",
+          "section": "The Sarcasm Classifier",
+          "text": "We interpret sarcasm detection as a binary classification problem. The training data constitutes 994 examples created using our eye-movement database for sarcasm detection. To check the effectiveness of our feature set, we observe the performance of multiple classification techniques on our dataset through a stratified 10-fold cross validation. We also compare the classification accuracy of our system and the best available systems proposed by riloff2013sarcasm and joshi2015harnessing on our dataset. Using Weka BIBREF18 and LibSVM BIBREF19 APIs, we implement the following classifiers:"
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1610.08815:p00012",
+          "section": "Sentiment Analysis and Sarcasm Detection",
+          "text": "Sarcasm detection is an important subtask of sentiment analysis BIBREF27 . Since sarcastic sentences are subjective, they carry sentiment and emotion-bearing information. Most of the studies in the literature BIBREF28 , BIBREF29 , BIBREF9 , BIBREF30 include sentiment features in sarcasm detection with the use of a state-of-the-art sentiment lexicon. Below, we explain how sentiment information is key to express sarcastic opinions and the approach we undertake to exploit such information for sarcasm detection."
+        },
+        {
+          "paragraph_id": "1610.08815:p00006",
+          "section": "Introduction",
+          "text": "The rest of the paper is organized as follows: Section SECREF2 proposes a brief literature review on sarcasm detection; Section SECREF4 presents the proposed approach; experimental results and thorough discussion on the experiments are given in Section SECREF5 ; finally, Section SECREF6 concludes the paper."
+        },
+        {
+          "paragraph_id": "1701.05574:p00033",
+          "section": "The Sarcasm Classifier",
+          "text": "We interpret sarcasm detection as a binary classification problem. The training data constitutes 994 examples created using our eye-movement database for sarcasm detection. To check the effectiveness of our feature set, we observe the performance of multiple classification techniques on our dataset through a stratified 10-fold cross validation. We also compare the classification accuracy of our system and the best available systems proposed by riloff2013sarcasm and joshi2015harnessing on our dataset. Using Weka BIBREF18 and LibSVM BIBREF19 APIs, we implement the following classifiers:"
+        },
+        {
+          "paragraph_id": "1701.05574:p00001",
+          "section": "Abstract",
+          "text": "In this paper, we propose a novel mechanism for enriching the feature vector, for the task of sarcasm detection, with cognitive features extracted from eye-movement patterns of human readers. Sarcasm detection has been a challenging research problem, and its importance for NLP applications such as review summarization, dialog systems and sentiment analysis is well recognized. Sarcasm can often be traced to incongruity that becomes apparent as the full sentence unfolds. This presence of incongruity- implicit or explicit- affects the way readers eyes move through the text. We observe the difference in the behaviour of the eye, while reading sarcastic and non sarcastic sentences. Motivated by his observation, we augment traditional linguistic and stylistic features for sarcasm detection with the cognitive features obtained from readers eye movement data. We perform statistical classification using the enhanced feature set so obtained. The augmented cognitive features improve sarcasm detection by 3.7% (in terms of F-score), over the performance of the best reported system."
+        },
+        {
+          "paragraph_id": "1902.09666:p00012",
+          "section": "Related Work",
+          "text": "Bullying detection: Several studies have been published on bullying detection. One of them is the one by xu2012learning which apply sentiment analysis to detect bullying in tweets. xu2012learning use topic models to to identify relevant topics in bullying. Another related study is the one by dadvar2013improving which use user-related features such as the frequency of profanity in previous messages to improve bullying detection."
+        }
+      ],
+      "plain_papers": 2,
+      "capped_papers": 3
+    },
+    {
+      "question_id": "cross-03",
+      "question": "Which papers evaluate on XNLI?",
+      "plain": [
+        {
+          "paragraph_id": "2004.04721:p00044",
+          "section": "Caption",
+          "text": "Table 6: XNLI test results (acc). Results for other methods are taken from their respective papers or, if not provided, from Conneau et al. (2019). For those with multiple variants, we select the one with the best results."
+        },
+        {
+          "paragraph_id": "2004.04721:p00018",
+          "section": "NLI experiments",
+          "text": "We next discuss our main results in the XNLI development set (\u00a7SECREF15, \u00a7SECREF16), run additional experiments to better understand the behavior of our different variants (\u00a7SECREF17, \u00a7SECREF22, \u00a7SECREF25), and compare our results to previous work in the XNLI test set (\u00a7SECREF30)."
+        },
+        {
+          "paragraph_id": "2004.04721:p00039",
+          "section": "Caption",
+          "text": "Table 1: XNLI dev results (acc). BT-XX and MT-XX consistently outperform ORIG in all cases."
+        },
+        {
+          "paragraph_id": "1909.03405:p00045",
+          "section": "Results of Chinese NLP Tasks",
+          "text": "XNLI BIBREF19 a multi-lingual dataset. The data sample in XNLI is a sentence pair annotated with textual entailment. The Chinese part is used."
+        },
+        {
+          "paragraph_id": "2004.04721:p00031",
+          "section": "Discussion ::: The cross-lingual transfer gap on XNLI was overestimated.",
+          "text": "Given the parallel nature of XNLI, accuracy differences across languages are commonly interpreted as the loss of performance when generalizing from English to the rest of languages. However, our work shows that there is another factor that can have a much larger impact: the loss of performance when generalizing from original to translated data. Our results suggest that the real cross-lingual generalization ability of XLM-R is considerably better than what the accuracy numbers in XNLI reflect."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "2004.04721:p00044",
+          "section": "Caption",
+          "text": "Table 6: XNLI test results (acc). Results for other methods are taken from their respective papers or, if not provided, from Conneau et al. (2019). For those with multiple variants, we select the one with the best results."
+        },
+        {
+          "paragraph_id": "2004.04721:p00018",
+          "section": "NLI experiments",
+          "text": "We next discuss our main results in the XNLI development set (\u00a7SECREF15, \u00a7SECREF16), run additional experiments to better understand the behavior of our different variants (\u00a7SECREF17, \u00a7SECREF22, \u00a7SECREF25), and compare our results to previous work in the XNLI test set (\u00a7SECREF30)."
+        },
+        {
+          "paragraph_id": "1909.03405:p00045",
+          "section": "Results of Chinese NLP Tasks",
+          "text": "XNLI BIBREF19 a multi-lingual dataset. The data sample in XNLI is a sentence pair annotated with textual entailment. The Chinese part is used."
+        },
+        {
+          "paragraph_id": "2002.07306:p00033",
+          "section": "Results",
+          "text": "In this section, we present the results of out models for two zero-shot cross lingual transfer tasks: XNLI and dependency parsing."
+        },
+        {
+          "paragraph_id": "2002.07306:p00049",
+          "section": "Caption",
+          "text": "Table 1: Zero-shot classification results on XNLI. \u00ec indicates parallel data is used. RAMEN only uses parallel data for initialization. The best results are marked in bold."
+        }
+      ],
+      "plain_papers": 2,
+      "capped_papers": 3
+    },
+    {
+      "question_id": "cross-04",
+      "question": "Which papers address hate speech detection?",
+      "plain": [
+        {
+          "paragraph_id": "1902.09666:p00014",
+          "section": "Related Work",
+          "text": "Hate speech identification: It is perhaps the most widespread abusive language detection sub-task. There have been several studies published on this sub-task such as kwok2013locate and djuric2015hate who build a binary classifier to distinguish between `clean' comments and comments containing hate speech and profanity. More recently, Davidson et al. davidson2017automated presented the hate speech detection dataset containing over 24,000 English tweets labeled as non offensive, hate speech, and profanity."
+        },
+        {
+          "paragraph_id": "1910.12574:p00000",
+          "section": "Title",
+          "text": "A BERT-Based Transfer Learning Approach for Hate Speech Detection in Online Social Media"
+        },
+        {
+          "paragraph_id": "1910.12574:p00004",
+          "section": "Introduction",
+          "text": "Recently, the problem of online abusive detection has attracted scientific attention. Proof of this is the creation of the third Workshop on Abusive Language Online or Kaggle\u2019s Toxic Comment Classification Challenge that gathered 4,551 teams in 2018 to detect different types of toxicities (threats, obscenity, etc.). In the scope of this work, we mainly focus on the term hate speech as abusive content in social media, since it can be considered a broad umbrella term for numerous kinds of insulting user-generated content. Hate speech is commonly defined as any communication criticizing a person or a group based on some characteristics such as gender, sexual orientation, nationality, religion, race, etc. Hate speech detection is not a stable or simple target because misclassification of regular conversation as hate speech can severely affect users\u2019 freedom of expression and reputation, while misclassification of hateful conversations as unproblematic would maintain the status of online communities as unsafe environments BIBREF2."
+        },
+        {
+          "paragraph_id": "1910.12574:p00019",
+          "section": "Experiments and Results",
+          "text": "We first introduce datasets used in our study and then investigate the different fine-tuning strategies for hate speech detection task. We also include the details of our implementation and error analysis in the respective subsections."
+        },
+        {
+          "paragraph_id": "2004.02192:p00007",
+          "section": "Related Work",
+          "text": "Many recent papers have focused on the detection of offensive language, including hate speech BIBREF6, BIBREF7, BIBREF8, BIBREF9, BIBREF10, BIBREF11, BIBREF12, BIBREF13. Offensive language can be categorized as: Vulgar, which include explicit and rude sexual references, Pornographic, and Hateful, which includes offensive remarks concerning people\u2019s race, religion, country, etc. BIBREF14. Prior works have concentrated on building annotated corpora and training classification models. Concerning corpora, hatespeechdata.com attempts to maintain an updated list of hate speech corpora for multiple languages including Arabic and English. Further, SemEval 2019 ran an evaluation task targeted at detecting offensive language, which focused exclusively on English BIBREF15. As for classification models, most studies used supervised classification at either word level BIBREF10, character sequence level BIBREF11, and word embeddings BIBREF9. The studies used different classification techniques including using Na\u00efve Bayes BIBREF10, SVM BIBREF11, and deep learning BIBREF6, BIBREF7, BIBREF12 classification. The accuracy of the aforementioned system ranged between 76% and 90%. Earlier work looked at the use of sentiment words as features as well as contextual features BIBREF13."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1902.09666:p00014",
+          "section": "Related Work",
+          "text": "Hate speech identification: It is perhaps the most widespread abusive language detection sub-task. There have been several studies published on this sub-task such as kwok2013locate and djuric2015hate who build a binary classifier to distinguish between `clean' comments and comments containing hate speech and profanity. More recently, Davidson et al. davidson2017automated presented the hate speech detection dataset containing over 24,000 English tweets labeled as non offensive, hate speech, and profanity."
+        },
+        {
+          "paragraph_id": "1910.12574:p00000",
+          "section": "Title",
+          "text": "A BERT-Based Transfer Learning Approach for Hate Speech Detection in Online Social Media"
+        },
+        {
+          "paragraph_id": "1910.12574:p00004",
+          "section": "Introduction",
+          "text": "Recently, the problem of online abusive detection has attracted scientific attention. Proof of this is the creation of the third Workshop on Abusive Language Online or Kaggle\u2019s Toxic Comment Classification Challenge that gathered 4,551 teams in 2018 to detect different types of toxicities (threats, obscenity, etc.). In the scope of this work, we mainly focus on the term hate speech as abusive content in social media, since it can be considered a broad umbrella term for numerous kinds of insulting user-generated content. Hate speech is commonly defined as any communication criticizing a person or a group based on some characteristics such as gender, sexual orientation, nationality, religion, race, etc. Hate speech detection is not a stable or simple target because misclassification of regular conversation as hate speech can severely affect users\u2019 freedom of expression and reputation, while misclassification of hateful conversations as unproblematic would maintain the status of online communities as unsafe environments BIBREF2."
+        },
+        {
+          "paragraph_id": "2004.02192:p00007",
+          "section": "Related Work",
+          "text": "Many recent papers have focused on the detection of offensive language, including hate speech BIBREF6, BIBREF7, BIBREF8, BIBREF9, BIBREF10, BIBREF11, BIBREF12, BIBREF13. Offensive language can be categorized as: Vulgar, which include explicit and rude sexual references, Pornographic, and Hateful, which includes offensive remarks concerning people\u2019s race, religion, country, etc. BIBREF14. Prior works have concentrated on building annotated corpora and training classification models. Concerning corpora, hatespeechdata.com attempts to maintain an updated list of hate speech corpora for multiple languages including Arabic and English. Further, SemEval 2019 ran an evaluation task targeted at detecting offensive language, which focused exclusively on English BIBREF15. As for classification models, most studies used supervised classification at either word level BIBREF10, character sequence level BIBREF11, and word embeddings BIBREF9. The studies used different classification techniques including using Na\u00efve Bayes BIBREF10, SVM BIBREF11, and deep learning BIBREF6, BIBREF7, BIBREF12 classification. The accuracy of the aforementioned system ranged between 76% and 90%. Earlier work looked at the use of sentiment words as features as well as contextual features BIBREF13."
+        },
+        {
+          "paragraph_id": "2004.02192:p00002",
+          "section": "Introduction",
+          "text": "Disclaimer: Due to the nature of the paper, some examples contain highly offensive language and hate speech. They don't reflect the views of the authors in any way, and the point of the paper is to help fight such speech. Much recent interest has focused on the detection of offensive language and hate speech in online social media. Such language is often associated with undesirable online behaviors such as trolling, cyberbullying, online extremism, political polarization, and propaganda. Thus, offensive language detection is instrumental for a variety of application such as: quantifying polarization BIBREF0, BIBREF1, trolls and propaganda account detection BIBREF2, detecting the likelihood of hate crimes BIBREF3; and predicting conflict BIBREF4. In this paper, we describe our methodology for building a large dataset of Arabic offensive tweets. Given that roughly 1-2% of all Arabic tweets are offensive BIBREF5, targeted annotation is essential for efficiently building a large dataset. Since our methodology does not use a seed list of offensive words, it is not biased by topic, target, or dialect. Using our methodology, we tagged 10,000 Arabic tweet dataset for offensiveness, where offensive tweets account for roughly 19% of the tweets. Further, we labeled tweets as vulgar or hate speech. To date, this is the largest available dataset, which we plan to make publicly available along with annotation guidelines. We use this dataset to characterize Arabic offensive language to ascertain the topics, dialects, and users' gender that are most associated with the use of offensive language. Though we suspect that there are common features that span different languages and cultures, some characteristics of Arabic offensive language is language and culture specific. Thus, we conduct a thorough analysis of how Arabic users use offensive language. Next, we use the dataset to train strong Arabic offensive language classifiers using state-of-the-art representations and classification techniques. Specifically, we experiment with static and contextualized embeddings for representation along with a variety of classifiers such as a deep neural network classifier and Support Vector Machine (SVM)."
+        }
+      ],
+      "plain_papers": 3,
+      "capped_papers": 3
+    },
+    {
+      "question_id": "cross-05",
+      "question": "Which papers study code-switching?",
+      "plain": [
+        {
+          "paragraph_id": "1909.09587:p00016",
+          "section": "What Does Zero-shot Transfer Model Learn? ::: Code-switching Dataset",
+          "text": "We observe linguistic-agnostic representations in the last subsection. If tokens are represented in a language-agnostic way, the model may be able to handle code-switching data. Because there is no code-switching data for RC, we create artificial code-switching datasets by replacing some of the words in contexts or questions with their synonyms in another language. The synonyms are found by word-by-word translation with given dictionaries. We use the bilingual dictionaries collected and released in facebookresearch/MUSE GitHub repository. We substitute the words if and only if the words are in the bilingual dictionaries."
+        },
+        {
+          "paragraph_id": "1806.05513:p00003",
+          "section": "Introduction",
+          "text": "Majority of the researches on social media texts is focused on English. A study by schroeder2010half shows that, a high percentage of these texts are in non-English languages. fischer2011language gives some interesting information about the languages used on Twitter based on the geographical locations. With a huge amount of such user generated data available on social media, there is a need to develop technologies for non-English languages. In multilingual regions like South Asia, majority of the social media users speak more than two languages. In India, Hindi is the most spoken language (spoken by 41% of the population) and English is the official language of the country. Twitter has around 23.2 million monthly active users in India. Native speakers of Hindi often put English words in the sentences and transliterate the whole sentence to Latin script while posting on social media, thereby making the task of automatic text classification a very challenging problem. Linguists came up with a term for any type of language mixing, known as `code-mixing' or `code-switching' BIBREF6 , BIBREF7 , BIBREF8 , BIBREF9 . Both the terms are used interchangeably, but there is a slight difference between the two terms. Code-mixing refers to the insertion of words, phrases, and morphemes of one language into a statement or an expression of another language, whereas transliteration of every word in a sentence to another script ( here Devanagari to Latin) is coined code-switching BIBREF10 . The first tweet in Figure 1 is an example of code-mixing and second is an example of code-switching. In this paper, we use code-mixing to denote both cases."
+        },
+        {
+          "paragraph_id": "1909.09587:p00034",
+          "section": "Caption",
+          "text": "Table 4: EM/F1 scores on artificial code-switching datasets generated by replacing some of the words in English dataset with synonyms in another languages. (Sub. is the substitution ratio of the dataset)"
+        },
+        {
+          "paragraph_id": "1909.09587:p00017",
+          "section": "What Does Zero-shot Transfer Model Learn? ::: Code-switching Dataset",
+          "text": "Table TABREF14 shows that on all the code-switching datasets, the EM/F1 score drops, indicating that the semantics of representations are not totally disentangled from language. However, the examples of the answers of the model (Table TABREF21) show that multi-BERT could find the correct answer spans although some keywords in the spans have been translated into another language."
+        },
+        {
+          "paragraph_id": "1912.01772:p00040",
+          "section": "Caption",
+          "text": "Table 2: Example of an utterance along with the different annotations. We additionally highlight the code-switching annotations ([SPA] indicates Spanish words) as well as pre-normalized transcriptions that indicating non-standard pronunciations ([!1pu\u2019] indicates that the previous 1 word was pronounced as \u2018pu\u2019\u2019 instead of \u2018pues\u2019)."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1909.09587:p00016",
+          "section": "What Does Zero-shot Transfer Model Learn? ::: Code-switching Dataset",
+          "text": "We observe linguistic-agnostic representations in the last subsection. If tokens are represented in a language-agnostic way, the model may be able to handle code-switching data. Because there is no code-switching data for RC, we create artificial code-switching datasets by replacing some of the words in contexts or questions with their synonyms in another language. The synonyms are found by word-by-word translation with given dictionaries. We use the bilingual dictionaries collected and released in facebookresearch/MUSE GitHub repository. We substitute the words if and only if the words are in the bilingual dictionaries."
+        },
+        {
+          "paragraph_id": "1806.05513:p00003",
+          "section": "Introduction",
+          "text": "Majority of the researches on social media texts is focused on English. A study by schroeder2010half shows that, a high percentage of these texts are in non-English languages. fischer2011language gives some interesting information about the languages used on Twitter based on the geographical locations. With a huge amount of such user generated data available on social media, there is a need to develop technologies for non-English languages. In multilingual regions like South Asia, majority of the social media users speak more than two languages. In India, Hindi is the most spoken language (spoken by 41% of the population) and English is the official language of the country. Twitter has around 23.2 million monthly active users in India. Native speakers of Hindi often put English words in the sentences and transliterate the whole sentence to Latin script while posting on social media, thereby making the task of automatic text classification a very challenging problem. Linguists came up with a term for any type of language mixing, known as `code-mixing' or `code-switching' BIBREF6 , BIBREF7 , BIBREF8 , BIBREF9 . Both the terms are used interchangeably, but there is a slight difference between the two terms. Code-mixing refers to the insertion of words, phrases, and morphemes of one language into a statement or an expression of another language, whereas transliteration of every word in a sentence to another script ( here Devanagari to Latin) is coined code-switching BIBREF10 . The first tweet in Figure 1 is an example of code-mixing and second is an example of code-switching. In this paper, we use code-mixing to denote both cases."
+        },
+        {
+          "paragraph_id": "1909.09587:p00034",
+          "section": "Caption",
+          "text": "Table 4: EM/F1 scores on artificial code-switching datasets generated by replacing some of the words in English dataset with synonyms in another languages. (Sub. is the substitution ratio of the dataset)"
+        },
+        {
+          "paragraph_id": "1912.01772:p00040",
+          "section": "Caption",
+          "text": "Table 2: Example of an utterance along with the different annotations. We additionally highlight the code-switching annotations ([SPA] indicates Spanish words) as well as pre-normalized transcriptions that indicating non-standard pronunciations ([!1pu\u2019] indicates that the previous 1 word was pronounced as \u2018pu\u2019\u2019 instead of \u2018pues\u2019)."
+        },
+        {
+          "paragraph_id": "1912.01772:p00001",
+          "section": "Abstract",
+          "text": "We present a resource for computational experiments on Mapudungun, a polysynthetic indigenous language spoken in Chile with upwards of 200 thousand speakers. We provide 142 hours of culturally significant conversations in the domain of medical treatment. The conversations are fully transcribed and translated into Spanish. The transcriptions also include annotations for code-switching and non-standard pronunciations. We also provide baseline results on three core NLP tasks: speech recognition, speech synthesis, and machine translation between Spanish and Mapudungun. We further explore other applications for which the corpus will be suitable, including the study of code-switching, historical orthography change, linguistic structure, and sociological and anthropological studies."
+        }
+      ],
+      "plain_papers": 3,
+      "capped_papers": 3
+    },
+    {
+      "question_id": "cross-06",
+      "question": "Which papers work on fake news detection?",
+      "plain": [
+        {
+          "paragraph_id": "1712.05999:p00019",
+          "section": "Research Hypotheses",
+          "text": "Previous works on the area (presented in the section above) suggest that there may be important determinants for the adoption and diffusion of fake news. Our hypotheses builds on them and identifies three important dimensions that may help distinguishing fake news from legit information:"
+        },
+        {
+          "paragraph_id": "1712.05999:p00014",
+          "section": "Introduction",
+          "text": "The rest of the paper is organized as follows. The next section briefly discusses where this work is located within the literature on fake news and contextualizes the type of fake news we are studying. Then, we present our hypotheses, the data, and the methodology we follow. Finally, we present our findings, conclusions of this study, and future lines of work."
+        },
+        {
+          "paragraph_id": "1712.05999:p00015",
+          "section": "Defining Fake news",
+          "text": "Our research is connected to different strands of academic knowledge related to the phenomenon of fake news. In relation to Computer Science, a recent survey by Conroy and colleagues BIBREF10 identifies two popular approaches to single-out fake news. On the one hand, the authors pointed to linguistic approaches consisting in using text, its linguistic characteristics and machine learning techniques to automatically flag fake news. On the other, these researchers underscored the use of network approaches, which make use of network characteristics and meta-data, to identify fake news."
+        },
+        {
+          "paragraph_id": "1712.05999:p00017",
+          "section": "Defining Fake news",
+          "text": "In relation to the production and distribution of fake news, a recent paper in the field of Economics BIBREF9 found that most fake news sites use names that resemble those of legitimate organizations, and that sites supplying fake news tend to be short-lived. These authors also noticed that fake news items are more likely shared than legitimate articles coming from trusted sources, and they tend to exhibit a larger level of polarization."
+        },
+        {
+          "paragraph_id": "1712.05999:p00009",
+          "section": "Introduction",
+          "text": "Our current research hence departs from the assumption that social media is a conduit for fake news and asks the question of whether fake news (as spam was some years ago) can be identified, modelled and eventually blocked. In order to do so, we use a sample of more that 1.5M tweets collected on November 8th 2016 \u2014election day in the United States\u2014 with the goal of identifying features that tweets containing fake news are likely to have. As such, our paper aims to provide a preliminary characterization of fake news in Twitter by looking into meta-data embedded in tweets. Considering meta-data as a relevant factor of analysis is in line with findings reported by Morris et al. BIBREF6 . We argue that understanding differences between tweets containing fake news and regular tweets will allow researchers to design mechanisms to block fake news in Twitter."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1712.05999:p00019",
+          "section": "Research Hypotheses",
+          "text": "Previous works on the area (presented in the section above) suggest that there may be important determinants for the adoption and diffusion of fake news. Our hypotheses builds on them and identifies three important dimensions that may help distinguishing fake news from legit information:"
+        },
+        {
+          "paragraph_id": "1712.05999:p00014",
+          "section": "Introduction",
+          "text": "The rest of the paper is organized as follows. The next section briefly discusses where this work is located within the literature on fake news and contextualizes the type of fake news we are studying. Then, we present our hypotheses, the data, and the methodology we follow. Finally, we present our findings, conclusions of this study, and future lines of work."
+        },
+        {
+          "paragraph_id": "2002.12612:p00052",
+          "section": "Experiments ::: Classification performances",
+          "text": "Overall, our performances are comparable with those achieved by two state-of-the-art deep learning models for \"fake news\" detection BIBREF9BIBREF36."
+        },
+        {
+          "paragraph_id": "1910.06592:p00012",
+          "section": "Methodology",
+          "text": "Features. We argue that different kinds of features like the sentiment of the text, morality, and other text-based features are critical to detect the nonfactual Twitter accounts by utilizing their occurrence during reporting the news in an account's timeline. We employ a rich set of features borrowed from previous works in fake news, bias, and rumors detection BIBREF0, BIBREF1, BIBREF8, BIBREF9."
+        },
+        {
+          "paragraph_id": "1910.06592:p00002",
+          "section": "Introduction",
+          "text": "Social media platforms have made the spreading of fake news easier, faster as well as able to reach a wider audience. Social media offer another feature which is the anonymity for the authors, and this opens the door to many suspicious individuals or organizations to utilize these platforms. Recently, there has been an increased number of spreading fake news and rumors over the web and social media BIBREF0. Fake news in social media vary considering the intention to mislead. Some of these news are spread with the intention to be ironic or to deliver the news in an ironic way (satirical news). Others, such as propaganda, hoaxes, and clickbaits, are spread to mislead the audience or to manipulate their opinions. In the case of Twitter, suspicious news annotations should be done on a tweet rather than an account level, since some accounts mix fake with real news. However, these annotations are extremely costly and time consuming \u2013 i.e., due to high volume of available tweets Consequently, a first step in this direction, e.g., as a pre-filtering step, can be viewed as the task of detecting fake news at the account level."
+        }
+      ],
+      "plain_papers": 1,
+      "capped_papers": 3
+    },
+    {
+      "question_id": "cross-07",
+      "question": "Which papers collect annotations with Amazon Mechanical Turk?",
+      "plain": [
+        {
+          "paragraph_id": "1601.02403:p00040",
+          "section": "Argumentation Mining",
+          "text": "Faulkner2014 used Amazon Mechanical Turk to annotate 8,179 sentences from student essays. Three annotators decided whether the given sentence offered reasons for or against the main prompt of the essay (or no reason at all; 66% of the sentences were found to be neutral and easy to identify). The achieved Cohen's INLINEFORM0 was 0.70."
+        },
+        {
+          "paragraph_id": "1905.07791:p00002",
+          "section": "Introduction",
+          "text": "Assembling training corpora of annotated natural language examples in specialized domains such as biomedicine poses considerable challenges. Experts with the requisite domain knowledge to perform high-quality annotation tend to be expensive, while lay annotators may not have the necessary knowledge to provide high-quality annotations. A practical approach for collecting a sufficiently large corpus would be to use crowdsourcing platforms like Amazon Mechanical Turk (MTurk). However, crowd workers in general are likely to provide noisy annotations BIBREF0 , BIBREF1 , BIBREF2 , an issue exacerbated by the technical nature of specialized content. Some of this noise may reflect worker quality and can be modeled BIBREF0 , BIBREF1 , BIBREF3 , BIBREF4 , but for some instances lay people may simply lack the domain knowledge to provide useful annotation."
+        },
+        {
+          "paragraph_id": "1609.00425:p00014",
+          "section": "Dogmatism data",
+          "text": "Dogmatism annotations. Building a useful computational model requires labeled training data. We labeled the Reddit dataset using crowdworkers on Amazon Mechanical Turk (AMT), creating the first public corpus annotated with levels of dogmatism. We asked crowdworkers to rate levels of dogmatism on a 5-point Likert scale, as supported by similar annotation tasks in prior work BIBREF2 . Concretely, we gave crowdworkers the following task:"
+        },
+        {
+          "paragraph_id": "1710.04203:p00014",
+          "section": "Related Work",
+          "text": "Manual lexicon acquisition is constrained by the number of people contributing to the task, and the number of annotations from each participant. These constraints can be eliminated by increasing the number of people involved, for instance, by using crowdsourcing BIBREF18 . Amazon's Mechanical Turk (MTurk) is a crowdsourcing platform frequently used for polarity sentiment lexicon acquisition via crowdsourcing BIBREF19 . MTurk is also used, for the annotation of one thousand tweets in BIBREF20 , ten thousand terms in BIBREF21 with gold standards, and the annotation of ninety five emoticons out of one thousand total emoticons found in BIBREF22 . While BIBREF23 had one thousand four hundred terms labelled with a supervised machine learning and crowd validators. The challenge is to introduce a work-flow that is scalable, unsupervised and applicable to different information types."
+        },
+        {
+          "paragraph_id": "1908.08345:p00047",
+          "section": "Results ::: Human Evaluation",
+          "text": "Both types of evaluation were conducted on the Amazon Mechanical Turk platform. For the CNN/DailyMail and NYT datasets we used the same documents (20 in total) and questions from previous work BIBREF8, BIBREF18. For XSum, we randomly selected 20 documents (and their questions) from the release of BIBREF22. We elicited 3 responses per HIT. With regard to QA evaluation, we adopted the scoring mechanism from BIBREF33; correct answers were marked with a score of one, partially correct answers with 0.5, and zero otherwise. For quality-based evaluation, the rating of each system was computed as the percentage of times it was chosen as better minus the times it was selected as worse. Ratings thus range from -1 (worst) to 1 (best)."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1601.02403:p00040",
+          "section": "Argumentation Mining",
+          "text": "Faulkner2014 used Amazon Mechanical Turk to annotate 8,179 sentences from student essays. Three annotators decided whether the given sentence offered reasons for or against the main prompt of the essay (or no reason at all; 66% of the sentences were found to be neutral and easy to identify). The achieved Cohen's INLINEFORM0 was 0.70."
+        },
+        {
+          "paragraph_id": "1905.07791:p00002",
+          "section": "Introduction",
+          "text": "Assembling training corpora of annotated natural language examples in specialized domains such as biomedicine poses considerable challenges. Experts with the requisite domain knowledge to perform high-quality annotation tend to be expensive, while lay annotators may not have the necessary knowledge to provide high-quality annotations. A practical approach for collecting a sufficiently large corpus would be to use crowdsourcing platforms like Amazon Mechanical Turk (MTurk). However, crowd workers in general are likely to provide noisy annotations BIBREF0 , BIBREF1 , BIBREF2 , an issue exacerbated by the technical nature of specialized content. Some of this noise may reflect worker quality and can be modeled BIBREF0 , BIBREF1 , BIBREF3 , BIBREF4 , but for some instances lay people may simply lack the domain knowledge to provide useful annotation."
+        },
+        {
+          "paragraph_id": "1609.00425:p00014",
+          "section": "Dogmatism data",
+          "text": "Dogmatism annotations. Building a useful computational model requires labeled training data. We labeled the Reddit dataset using crowdworkers on Amazon Mechanical Turk (AMT), creating the first public corpus annotated with levels of dogmatism. We asked crowdworkers to rate levels of dogmatism on a 5-point Likert scale, as supported by similar annotation tasks in prior work BIBREF2 . Concretely, we gave crowdworkers the following task:"
+        },
+        {
+          "paragraph_id": "1710.04203:p00014",
+          "section": "Related Work",
+          "text": "Manual lexicon acquisition is constrained by the number of people contributing to the task, and the number of annotations from each participant. These constraints can be eliminated by increasing the number of people involved, for instance, by using crowdsourcing BIBREF18 . Amazon's Mechanical Turk (MTurk) is a crowdsourcing platform frequently used for polarity sentiment lexicon acquisition via crowdsourcing BIBREF19 . MTurk is also used, for the annotation of one thousand tweets in BIBREF20 , ten thousand terms in BIBREF21 with gold standards, and the annotation of ninety five emoticons out of one thousand total emoticons found in BIBREF22 . While BIBREF23 had one thousand four hundred terms labelled with a supervised machine learning and crowd validators. The challenge is to introduce a work-flow that is scalable, unsupervised and applicable to different information types."
+        },
+        {
+          "paragraph_id": "1908.08345:p00047",
+          "section": "Results ::: Human Evaluation",
+          "text": "Both types of evaluation were conducted on the Amazon Mechanical Turk platform. For the CNN/DailyMail and NYT datasets we used the same documents (20 in total) and questions from previous work BIBREF8, BIBREF18. For XSum, we randomly selected 20 documents (and their questions) from the release of BIBREF22. We elicited 3 responses per HIT. With regard to QA evaluation, we adopted the scoring mechanism from BIBREF33; correct answers were marked with a score of one, partially correct answers with 0.5, and zero otherwise. For quality-based evaluation, the rating of each system was computed as the percentage of times it was chosen as better minus the times it was selected as worse. Ratings thus range from -1 (worst) to 1 (best)."
+        }
+      ],
+      "plain_papers": 5,
+      "capped_papers": 5
+    },
+    {
+      "question_id": "cross-08",
+      "question": "Which papers evaluate summaries with ROUGE?",
+      "plain": [
+        {
+          "paragraph_id": "1802.08636:p00013",
+          "section": "The Pitfalls of Cross-Entropy Loss",
+          "text": "Table TABREF6 (last column) shows candidate summaries ranked according to the mean of ROUGE-1, ROUGE-2, and ROUGE-L F INLINEFORM0 scores. Interestingly, multiple top ranked summaries have reasonably high ROUGE scores. For example, the average ROUGE for the summaries ranked second (0,13), third (11,13), and fourth (0,1,13) is 57.5%, 57.2%, and 57.1%, and all top 16 summaries have ROUGE scores more or equal to 50%. A few sentences are indicative of important content and appear frequently in the summaries: sentence 13 occurs in all summaries except one, while sentence 0 appears in several summaries too. Also note that summaries (11,13) and (1,13) yield better ROUGE scores compared to longer summaries, and may be as informative, yet more concise, alternatives."
+        },
+        {
+          "paragraph_id": "1604.00400:p00068",
+          "section": "Conclusions",
+          "text": "We provided an analysis of existing evaluation metrics for scientific summarization with evaluation of all variants of Rouge. We showed that Rouge may not be the best metric for summarization evaluation; especially in summaries with high terminology variations and paraphrasing (e.g. scientific summaries). Furthermore, we showed that different variants of Rouge result in different correlation values with human judgments, indicating that not all Rouge scores are equally effective. Among all variants of Rouge, Rouge-2 and Rouge-3 are better correlated with manual judgments in the context of scientific summarization. We furthermore proposed an alternative and more effective approach for scientific summarization evaluation (Summarization Evaluation by Relevance Analysis - Sera). Results revealed that in general, the proposed evaluation metric achieves higher correlations with semi-manual pyramid evaluation scores in comparison with Rouge."
+        },
+        {
+          "paragraph_id": "1604.00400:p00001",
+          "section": "Abstract",
+          "text": "Evaluation of text summarization approaches have been mostly based on metrics that measure similarities of system generated summaries with a set of human written gold-standard summaries. The most widely used metric in summarization evaluation has been the ROUGE family. ROUGE solely relies on lexical overlaps between the terms and phrases in the sentences; therefore, in cases of terminology variations and paraphrasing, ROUGE is not as effective. Scientific article summarization is one such case that is different from general domain summarization (e.g. newswire data). We provide an extensive analysis of ROUGE's effectiveness as an evaluation metric for scientific summarization; we show that, contrary to the common belief, ROUGE is not much reliable in evaluating scientific summaries. We furthermore show how different variants of ROUGE result in very different correlations with the manual Pyramid scores. Finally, we propose an alternative metric for summarization evaluation which is based on the content relevance between a system generated summary and the corresponding human written summaries. We call our metric SERA (Summarization Evaluation by Relevance Analysis). Unlike ROUGE, SERA consistently achieves high correlations with manual scores which shows its effectiveness in evaluation of scientific article summarization."
+        },
+        {
+          "paragraph_id": "1604.00400:p00064",
+          "section": "Related work",
+          "text": "Rouge BIBREF1 assesses the content quality of a candidate summary with respect to a set of human gold summaries based on their lexical overlaps. Rouge consists of several variants. Since its introduction, Rouge has been one of the most widely reported metrics in the summarization literature, and its high adoption has been due to its high correlation with human assessment scores in DUC datasets BIBREF1 . However, later research has casted doubts about the accuracy of Rouge against manual evaluations. conroy2008mind analyzed DUC 2005 to 2007 data and showed that while some systems achieve high Rouge scores with respect to human summaries, the linguistic and responsiveness scores of those systems do not correspond to the high Rouge scores."
+        },
+        {
+          "paragraph_id": "1902.09243:p00060",
+          "section": "Settings",
+          "text": "On CNN/Daily Mail dataset, we report the full-length F-1 score of the ROUGE-1, ROUGE-2 and ROUGE-L metrics, calculated using PyRouge package and the Porter stemmer option. On NYT50, following BIBREF4 we evaluate limited length ROUGE recall score(limit the generated summary length to the ground truth length). We split NYT50 summaries into sentences by semicolons to calculate the ROUGE scores."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1802.08636:p00013",
+          "section": "The Pitfalls of Cross-Entropy Loss",
+          "text": "Table TABREF6 (last column) shows candidate summaries ranked according to the mean of ROUGE-1, ROUGE-2, and ROUGE-L F INLINEFORM0 scores. Interestingly, multiple top ranked summaries have reasonably high ROUGE scores. For example, the average ROUGE for the summaries ranked second (0,13), third (11,13), and fourth (0,1,13) is 57.5%, 57.2%, and 57.1%, and all top 16 summaries have ROUGE scores more or equal to 50%. A few sentences are indicative of important content and appear frequently in the summaries: sentence 13 occurs in all summaries except one, while sentence 0 appears in several summaries too. Also note that summaries (11,13) and (1,13) yield better ROUGE scores compared to longer summaries, and may be as informative, yet more concise, alternatives."
+        },
+        {
+          "paragraph_id": "1604.00400:p00068",
+          "section": "Conclusions",
+          "text": "We provided an analysis of existing evaluation metrics for scientific summarization with evaluation of all variants of Rouge. We showed that Rouge may not be the best metric for summarization evaluation; especially in summaries with high terminology variations and paraphrasing (e.g. scientific summaries). Furthermore, we showed that different variants of Rouge result in different correlation values with human judgments, indicating that not all Rouge scores are equally effective. Among all variants of Rouge, Rouge-2 and Rouge-3 are better correlated with manual judgments in the context of scientific summarization. We furthermore proposed an alternative and more effective approach for scientific summarization evaluation (Summarization Evaluation by Relevance Analysis - Sera). Results revealed that in general, the proposed evaluation metric achieves higher correlations with semi-manual pyramid evaluation scores in comparison with Rouge."
+        },
+        {
+          "paragraph_id": "1604.00400:p00001",
+          "section": "Abstract",
+          "text": "Evaluation of text summarization approaches have been mostly based on metrics that measure similarities of system generated summaries with a set of human written gold-standard summaries. The most widely used metric in summarization evaluation has been the ROUGE family. ROUGE solely relies on lexical overlaps between the terms and phrases in the sentences; therefore, in cases of terminology variations and paraphrasing, ROUGE is not as effective. Scientific article summarization is one such case that is different from general domain summarization (e.g. newswire data). We provide an extensive analysis of ROUGE's effectiveness as an evaluation metric for scientific summarization; we show that, contrary to the common belief, ROUGE is not much reliable in evaluating scientific summaries. We furthermore show how different variants of ROUGE result in very different correlations with the manual Pyramid scores. Finally, we propose an alternative metric for summarization evaluation which is based on the content relevance between a system generated summary and the corresponding human written summaries. We call our metric SERA (Summarization Evaluation by Relevance Analysis). Unlike ROUGE, SERA consistently achieves high correlations with manual scores which shows its effectiveness in evaluation of scientific article summarization."
+        },
+        {
+          "paragraph_id": "1902.09243:p00060",
+          "section": "Settings",
+          "text": "On CNN/Daily Mail dataset, we report the full-length F-1 score of the ROUGE-1, ROUGE-2 and ROUGE-L metrics, calculated using PyRouge package and the Porter stemmer option. On NYT50, following BIBREF4 we evaluate limited length ROUGE recall score(limit the generated summary length to the ground truth length). We split NYT50 summaries into sentences by semicolons to calculate the ROUGE scores."
+        },
+        {
+          "paragraph_id": "1909.03582:p00042",
+          "section": "Sensational Headline Generation ::: Evaluation Metrics",
+          "text": "ROUGE: ROUGE is a commonly used evaluation metric for summarization. It measures the N-gram overlap between generated and training headlines. We use it to evaluate the relevance of generated headlines. The widely used pyrouge toolkit is used to calculate ROUGE-1 (RG-1), ROUGE-2 (RG-2), and ROUGE-L (RG-L)."
+        }
+      ],
+      "plain_papers": 3,
+      "capped_papers": 4
+    },
+    {
+      "question_id": "cross-09",
+      "question": "Which papers use ELMo embeddings?",
+      "plain": [
+        {
+          "paragraph_id": "1911.10049:p00033",
+          "section": "Conclusion",
+          "text": "We prepared precomputed ELMo contextual embeddings for seven languages: Croatian, Estonian, Finnish, Latvian, Lithuanian, Slovenian, and Swedish. We present the necessary background on embeddings and contextual embeddings, the details of training the embedding models, and their evaluation. We show that the size of used training sets importantly affects the quality of produced embeddings, and therefore the existing publicly available ELMo embeddings for the processed languages are inadequate. We trained new ELMo embeddings on larger training sets and analysed their properties on the analogy task and on the NER task. The results show that the newly produced contextual embeddings produce substantially better results compared to the non-contextual fastText baseline. In future work, we plan to use the produced contextual embeddings on the problems of news media industry. The pretrained ELMo models will be deposited to the CLARIN repository by the time of the final version of this paper."
+        },
+        {
+          "paragraph_id": "1904.10503:p00018",
+          "section": "NER using ELMo",
+          "text": "Recently, Peters et al. BIBREF19 proposed ELMo word representations. ELMo extends a traditional word embedding model with features produced bidirectionally with character convolutions. It has been shown that the utilization of ELMo for different NLP tasks result in improved performance compared to other types of word embedding models such as Word2Vec BIBREF20 , GloVe BIBREF21 , and fastText BIBREF22 ."
+        },
+        {
+          "paragraph_id": "1911.10049:p00025",
+          "section": "Evaluation ::: Word Analogy Task",
+          "text": "We first compare existing Latvian ELMo embeddings from ELMoForManyLangs project with our Latvian embeddings, followed by the detailed analysis of our ELMo embeddings. We trained Latvian ELMo using only CoNLL 2017 corpora. Since this is the only language, where we trained the embedding model on exactly the same corpora as ELMoForManyLangs models, we chose it for comparison between our ELMo model with ELMoForManyLangs. In other languages, additional or other corpora were used, so a direct comparison would also reflect the quality of the corpora used for training. In Latvian, however, only the size of the training dataset is different. ELMoForManyLangs uses only 20 million tokens and we use the whole corpus of 270 million tokens."
+        },
+        {
+          "paragraph_id": "1911.10049:p00000",
+          "section": "Title",
+          "text": "High Quality ELMo Embeddings for Seven Less-Resourced Languages"
+        },
+        {
+          "paragraph_id": "1910.14076:p00011",
+          "section": "Topic-attention Model",
+          "text": "ELMo ELMo is a new type of word representation introduced by BIBREF16 which considers contextual information captured by pre-trained BiLSTM language models. Similar works like BERT BIBREF23 and BioBERT BIBREF24 also consider context but with deeper structures. Compared with those models, ELMo has less parameters and not easy to be overfitting. We trained our ELMo model on the MIMIC-III corpus. Since some sentences also appear in the test set, one may raise the concern of performance inflation in testing. However, we pre-trained ELMo using the whole corpus of MIMIC in an unsupervised way, so the classification labels were not visible during training. To train the ELMo model, we adapted code from AllenNLP, we set the word embedding dimension to 64 and applied two BiLSTM layers. For all of our experiments that involved with ELMo, we initialized the word embeddings from the last layer of ELMo."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1911.10049:p00033",
+          "section": "Conclusion",
+          "text": "We prepared precomputed ELMo contextual embeddings for seven languages: Croatian, Estonian, Finnish, Latvian, Lithuanian, Slovenian, and Swedish. We present the necessary background on embeddings and contextual embeddings, the details of training the embedding models, and their evaluation. We show that the size of used training sets importantly affects the quality of produced embeddings, and therefore the existing publicly available ELMo embeddings for the processed languages are inadequate. We trained new ELMo embeddings on larger training sets and analysed their properties on the analogy task and on the NER task. The results show that the newly produced contextual embeddings produce substantially better results compared to the non-contextual fastText baseline. In future work, we plan to use the produced contextual embeddings on the problems of news media industry. The pretrained ELMo models will be deposited to the CLARIN repository by the time of the final version of this paper."
+        },
+        {
+          "paragraph_id": "1904.10503:p00018",
+          "section": "NER using ELMo",
+          "text": "Recently, Peters et al. BIBREF19 proposed ELMo word representations. ELMo extends a traditional word embedding model with features produced bidirectionally with character convolutions. It has been shown that the utilization of ELMo for different NLP tasks result in improved performance compared to other types of word embedding models such as Word2Vec BIBREF20 , GloVe BIBREF21 , and fastText BIBREF22 ."
+        },
+        {
+          "paragraph_id": "1911.10049:p00025",
+          "section": "Evaluation ::: Word Analogy Task",
+          "text": "We first compare existing Latvian ELMo embeddings from ELMoForManyLangs project with our Latvian embeddings, followed by the detailed analysis of our ELMo embeddings. We trained Latvian ELMo using only CoNLL 2017 corpora. Since this is the only language, where we trained the embedding model on exactly the same corpora as ELMoForManyLangs models, we chose it for comparison between our ELMo model with ELMoForManyLangs. In other languages, additional or other corpora were used, so a direct comparison would also reflect the quality of the corpora used for training. In Latvian, however, only the size of the training dataset is different. ELMoForManyLangs uses only 20 million tokens and we use the whole corpus of 270 million tokens."
+        },
+        {
+          "paragraph_id": "1910.14076:p00011",
+          "section": "Topic-attention Model",
+          "text": "ELMo ELMo is a new type of word representation introduced by BIBREF16 which considers contextual information captured by pre-trained BiLSTM language models. Similar works like BERT BIBREF23 and BioBERT BIBREF24 also consider context but with deeper structures. Compared with those models, ELMo has less parameters and not easy to be overfitting. We trained our ELMo model on the MIMIC-III corpus. Since some sentences also appear in the test set, one may raise the concern of performance inflation in testing. However, we pre-trained ELMo using the whole corpus of MIMIC in an unsupervised way, so the classification labels were not visible during training. To train the ELMo model, we adapted code from AllenNLP, we set the word embedding dimension to 64 and applied two BiLSTM layers. For all of our experiments that involved with ELMo, we initialized the word embeddings from the last layer of ELMo."
+        },
+        {
+          "paragraph_id": "1912.04961:p00037",
+          "section": "Results and Discussion ::: Difference in networks and approaches",
+          "text": "Embeddings: On Dosage extraction, in general, ELMo obtains better performance than BERT, refer to Table TABREF5. This could be because we concatenated the numbers with a hyphen, and as ELMo uses character-level tokens it can learn the tagging better than BERT, a similar observation is also noted in BIBREF17. On the other hand, on Frequency extraction, without pretraining, ELMo's performance is lagging by a big margin of $\\sim $8.5 ROUGE-1 F1 compared to BERT-based embeddings."
+        }
+      ],
+      "plain_papers": 3,
+      "capped_papers": 4
+    },
+    {
+      "question_id": "cross-10",
+      "question": "Which papers use CrowdFlower to annotate data?",
+      "plain": [
+        {
+          "paragraph_id": "1907.09369:p00022",
+          "section": "Model Performances on New Dataset",
+          "text": "To asses the performance of these models on a totally unseen data, we tried to classify the CrowdFlower emotional tweets dataset. The CrowdFlower dataset consists of 40k tweets annotated via crowd-sourcing each with a single emotional label. This dataset is considered a hard dataset to classify with a lot of noise. The distribution of the dataset can be seen in Table TABREF18 . The labeling on this dataset is non-standard, so we used the following mapping for labels:"
+        },
+        {
+          "paragraph_id": "1603.09631:p00018",
+          "section": "Dataset Collection Process",
+          "text": "However, getting access to systems with real users is usually hard. Therefore, we used the crowdsourcing platform CrowdFlower (CF) for our data collection."
+        },
+        {
+          "paragraph_id": "1907.09369:p00037",
+          "section": "Caption",
+          "text": "Table 6: Distribution of labels in CrowdFlower dataset."
+        },
+        {
+          "paragraph_id": "1907.09369:p00009",
+          "section": "Baseline Approaches",
+          "text": "We compare our approach to two other, the first one uses almost the same tweet data as we use for training, and the second one is the CrowdFlower dataset annotated for emotions."
+        },
+        {
+          "paragraph_id": "1907.09369:p00038",
+          "section": "Caption",
+          "text": "Table 7: Results from classifying CrowdFlower data using pre-trained model. Reported numbers are F1-measure."
+        }
+      ],
+      "capped": [
+        {
+          "paragraph_id": "1907.09369:p00022",
+          "section": "Model Performances on New Dataset",
+          "text": "To asses the performance of these models on a totally unseen data, we tried to classify the CrowdFlower emotional tweets dataset. The CrowdFlower dataset consists of 40k tweets annotated via crowd-sourcing each with a single emotional label. This dataset is considered a hard dataset to classify with a lot of noise. The distribution of the dataset can be seen in Table TABREF18 . The labeling on this dataset is non-standard, so we used the following mapping for labels:"
+        },
+        {
+          "paragraph_id": "1603.09631:p00018",
+          "section": "Dataset Collection Process",
+          "text": "However, getting access to systems with real users is usually hard. Therefore, we used the crowdsourcing platform CrowdFlower (CF) for our data collection."
+        },
+        {
+          "paragraph_id": "1907.09369:p00037",
+          "section": "Caption",
+          "text": "Table 6: Distribution of labels in CrowdFlower dataset."
+        },
+        {
+          "paragraph_id": "1905.07791:p00056",
+          "section": "Caption",
+          "text": "Table 1: Example sentences are difficult or easy to annotate for crowd workers. The underlined text are reference annotations from domain experts."
+        },
+        {
+          "paragraph_id": "1603.09631:p00050",
+          "section": "Conclusion",
+          "text": "For purposes of evaluation we collected a dataset from conversational dialogs with workers on crowdsourcing platform CrowdFlower. Those dialogs were annotated with expert annotators and published under Creative Commons 4.0 BY-SA license on lindat. We also provide evaluation scripts with the dataset that should ensure comparable evaluation of different interactive learning approaches."
+        }
+      ],
+      "plain_papers": 2,
+      "capped_papers": 3
+    }
+  ]
+}

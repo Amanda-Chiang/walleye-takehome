@@ -586,6 +586,7 @@ the application does.
   only when several papers are in scope. It would not change single-paper
   evaluation. It needs a few more cross-paper questions to judge, since
   sometimes one paper really does hold most of the evidence.
+- **Follow-up:** tested in 008; not adopted.
 
 ---
 
@@ -649,3 +650,79 @@ the application does.
   setting stays available, off by default, like section context (D9).
 - Within-paper term rarity is recorded as an untested hypothesis, not a
   next step: the evidence for it is 7 questions.
+
+---
+
+## 008: Per-paper cap for cross-paper questions (retrieval only, 10 questions)
+
+- **Date:** 2026-11-01
+- **Commit:** `dd50e81`
+- **Question:** does limiting each paper to 2 of the 5 passages fix the
+  crowding seen in 006, without bringing in irrelevant evidence?
+- **Method:** `tools/cross_paper_compare.py` retrieves 50 deep across all
+  281 papers with `config/composed-hybrid.json`, then selects 5 passages
+  two ways from the same ranking: the plain top 5 (what `answer` uses) and
+  the ranking with at most 2 per paper. Same BM25, dense, fusion and
+  paragraph IDs; the retriever is unchanged.
+- **Questions:** 10 broad "Which papers…" questions in
+  `data/cross-paper/questions.jsonl`, written by us from topic counts in
+  the corpus (4 to 66 matching papers per topic). No gold exists, so every
+  passage that differs between the two selections was judged by reading:
+  relevant (the passage shows that paper does what the question asks),
+  weak (on topic but does not show it), or irrelevant.
+- **Command:** `python tools/cross_paper_compare.py --config config/composed-hybrid.json --index-dir .index-full --questions data/cross-paper/questions.jsonl --output experiments/runs/008-cross-paper-cap.json`
+  (7 question embeddings; no answer-model calls).
+- **Results:** [008-cross-paper-cap.json](experiments/runs/008-cross-paper-cap.json)
+
+| Question | Papers, plain → capped | Relevant papers, plain → capped | What the cap added |
+| --- | --- | --- | --- |
+| GloVe | 5 → 5 | 5 → 5 | no change |
+| Sarcasm detection | 2 → 3 | 2 → 2 | a bullying-detection passage (**irrelevant**) and a second passage from a paper already in |
+| XNLI | 2 → 3 | 2 → 3 | `2002.07306` results and caption on XNLI (relevant) |
+| Hate speech | 3 → 3 | 3 → 3 | a disclaimer paragraph from a paper already in (weak) |
+| Code-switching | 3 → 3 | 3 → 3 | an abstract that does not mention code-switching (weak) |
+| Fake news | 1 → 3 | 1 → 3 | `2002.12612` and `1910.06592` on detecting fake news (relevant) |
+| Mechanical Turk | 5 → 5 | 5 → 5 | no change |
+| ROUGE | 3 → 4 | 3 → 4 | `1909.03582` uses ROUGE for generated headlines (relevant) |
+| ELMo | 3 → 4 | 3 → 4 | `1912.04961` compares ELMo with BERT (relevant) |
+| CrowdFlower | 2 → 3 | 2 → 2 | a caption about crowd workers with no CrowdFlower (**irrelevant**) |
+| **Total** | 29 → 36 | 29 → 34 | |
+
+- **Passages swapped:** 13 dropped, 13 added. All 13 dropped passages were
+  relevant but came from a paper already represented. Of the 13 added, 9
+  were relevant, 2 weak and 2 irrelevant.
+
+### Where diversity helps
+
+- **Topics with many papers and one dominant paper:** fake news (one paper
+  had all 5 slots; capped finds 2 more papers that detect fake news), XNLI,
+  ROUGE and ELMo. 5 relevant papers gained over 4 questions.
+
+### Where it hurts
+
+- **Narrow topics:** when fewer relevant papers rank high, the cap fills
+  the freed slots with whatever comes next: a bullying-detection paragraph
+  for sarcasm, a crowd-worker caption for CrowdFlower. The generator then
+  sees irrelevant evidence, and the dropped passages were relevant ones
+  (for sarcasm, the paragraph the 006 answer cited for "what data").
+- **The kept passages are the top-ranked, not the most useful:** for fake
+  news, the cap kept `1712.05999`'s "the rest of the paper is organized
+  as follows" paragraph and dropped its clearest statement of the task
+  (p00009). Both selections share this ranking weakness; the cap makes it
+  matter more by allowing only 2 per paper.
+- **Unchanged questions (2 of 10)** already had 5 different papers.
+
+### Decision
+
+- **Not adopted; the architecture stays unchanged** (D17). The cap helped
+  4 questions and added irrelevant evidence to 2, on 10 questions we wrote
+  and judged ourselves. That is not clear enough to change the default.
+- It also cannot tell a broad question ("Which papers use ELMo?") from a
+  specific question asked without a paper ID ("What data does the ELMo
+  paper for seven languages use?"), where forcing in other papers is
+  wrong. Telling them apart would need query routing, which is out of
+  scope.
+- **Documented limitation (for the writeup):** across all papers, the
+  answer sees at most 5 passages, so "which papers" answers list some
+  papers, not all, and a paper with many matching paragraphs can take
+  most of the 5.
