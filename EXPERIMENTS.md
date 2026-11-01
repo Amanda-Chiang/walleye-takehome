@@ -372,6 +372,10 @@ paragraphs under "Evaluation", one baseline each.
 The tokenizer's plural rule also clips non-plurals ("does" → "doe",
 "this" → "thi", "focus" → "focu"). It is applied the same way to
 questions and paragraphs, so matching still works; it is cosmetic.
+**Correction (2026-11-01):** not purely cosmetic. A word and its plural
+can clip differently ("focus" → "focu" but "focuses" → "focuse";
+"analysis" → "analysi" but "analyses" → "analyse"), so those forms no
+longer match. Left unchanged; changing it would be its own experiment.
 
 ### Conclusion and next step
 
@@ -582,3 +586,66 @@ the application does.
   only when several papers are in scope. It would not change single-paper
   evaluation. It needs a few more cross-paper questions to judge, since
   sometimes one paper really does hold most of the evidence.
+
+---
+
+## 007: BM25 query stopwords (retrieval only, 120 dev questions)
+
+- **Date:** 2026-11-01
+- **Commit:** `0f9cf4e`
+- **Hypothesis (from 003):** most of hybrid's 9 losses against dense come
+  from BM25 ranking paragraphs that match only function words, so dropping
+  those words from the query should remove the losses without hurting the
+  wins.
+- **Change:** `"stopwords": true` on the BM25 scorer, nothing else: 61
+  function and question words removed from queries only (paragraphs keep
+  them, so lengths and term rarity are unchanged). The plural rule is
+  unchanged, so the result is attributable to stopwords alone.
+- **Commands:** `python tools/retrieval_eval.py --config config/composed-{bm25,hybrid}-stopwords.json --index-dir .index-full --questions data/eval-120/dev_questions.jsonl --gold data/eval-120/dev_gold.jsonl --output experiments/runs/007-{bm25,hybrid}-stopwords.json`.
+  No API calls: question embeddings were already cached (D14).
+- **Results:** [007-bm25-stopwords.json](experiments/runs/007-bm25-stopwords.json),
+  [007-hybrid-stopwords.json](experiments/runs/007-hybrid-stopwords.json)
+
+| Config (100 answerable) | Recall@5 | Recall@10 | Recall@20 |
+| --- | ---: | ---: | ---: |
+| Dense (002b) | 0.59 | 0.79 | 0.91 |
+| BM25 (003) | 0.54 | 0.70 | 0.86 |
+| BM25 + stopwords | 0.50 | 0.76 | 0.87 |
+| Hybrid (003) | **0.65** | 0.79 | 0.92 |
+| Hybrid + stopwords | 0.64 | 0.77 | 0.91 |
+
+| Comparison at recall@5 | Wins | Losses | Sign test p |
+| --- | ---: | ---: | ---: |
+| BM25 + stopwords vs BM25 | 3 | 6 | 0.51 |
+| Hybrid + stopwords vs hybrid | 3 | 4 | 1.00 |
+| Hybrid + stopwords vs dense | 12 | 7 | 0.36 |
+
+### Questions that changed (hybrid)
+
+- **Fixed:** "What is the baseline?" (0 → 1), "did they collect their own
+  data?" (0 → 1), "What is the architecture of the model?" (0 → 0.5).
+- **Broken:** "What baselines are used for comparison?", "How many tweets
+  are in the dataset?", "How is evaluation performed?" (each 1 → 0), "What
+  metrics are used for evaluation?" (0.5 → 0).
+- Of hybrid's 9 losses against dense in 003, stopwords fix 2 ("did they
+  collect their own data?", "What is the architecture of the model?").
+  The other 7 remain.
+
+### Reading
+
+- The hypothesis was only partly right. Function words were noise in some
+  questions but a useful tie-breaker in others: once they are gone, the
+  remaining terms ("evaluation", "dataset", "used") appear in many
+  paragraphs of the same paper, and the order among those paragraphs
+  changes. "What is the McGurk effect?" lost its BM25 hit the same way.
+- The 7 remaining losses have generic content words ("dataset", "model",
+  "corpora") rather than function words. A possible cause, not tested:
+  term rarity (IDF) is computed over all papers, but ranking happens
+  within one paper, where words like "dataset" are everywhere.
+
+### Decision
+
+- **Not adopted.** Hybrid without stopwords stays the default (D15). The
+  setting stays available, off by default, like section context (D9).
+- Within-paper term rarity is recorded as an untested hypothesis, not a
+  next step: the evidence for it is 7 questions.

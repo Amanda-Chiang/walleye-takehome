@@ -408,3 +408,20 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   function words), with stopword removal as the next candidate.
 - **Cost:** No extra API calls per question beyond dense (BM25 is local;
   question embeddings are cached, D14). Index build is the same as dense.
+
+## D16: BM25 query stopwords: measured, not adopted
+
+- **Status:** Measured 2026-11-01 (EXPERIMENTS.md 007): **not adopted.**
+- **Decision:** Keep the `stopwords` setting on `BM25Scorer`, off by
+  default. The default hybrid config does not use it.
+- **Why:** 003 traced most hybrid losses to function-word matches, so
+  removing stopwords from the query was the cheapest fix. Measured on 100
+  answerable questions it moved hybrid recall@5 from 0.65 to 0.64 (3 wins,
+  4 losses) and BM25 alone from 0.54 to 0.50. It fixed 2 of the 9 hybrid
+  losses against dense but broke 4 other questions, where function words
+  had been breaking ties between paragraphs that share the same generic
+  content words.
+- **Scope:** Query side only, so paragraph lengths and term rarity are
+  unchanged and the result is attributable to the stopwords alone. The
+  plural rule was not changed in the same experiment (it has its own known
+  flaw, noted in EXPERIMENTS.md 003).
