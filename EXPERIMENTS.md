@@ -726,3 +726,53 @@ the application does.
   answer sees at most 5 passages, so "which papers" answers list some
   papers, not all, and a paper with many matching paragraphs can take
   most of the 5.
+
+---
+
+## 007b: BM25 query stopwords without "not" and "no" (retrieval only, 120 dev questions)
+
+- **Date:** 2026-11-01
+- **Commit:** `9f73a0b`
+- **Change from 007:** the optional stopword list no longer drops "not" or
+  "no" (61 → 59 words), because negation can reverse a question's meaning.
+  Everything else is as in 007: query-only filtering, same tokenizer,
+  BM25 formula, RRF and configs. 007's results are left as they were; this
+  is a separate run of the revised list.
+- **Commands:** as in 007, with outputs
+  `experiments/runs/007b-{bm25,hybrid}-stopwords.json`. No API calls: the
+  embedding cache file was unchanged after the run.
+- **Results:** [007b-bm25-stopwords.json](experiments/runs/007b-bm25-stopwords.json),
+  [007b-hybrid-stopwords.json](experiments/runs/007b-hybrid-stopwords.json)
+
+| Config (100 answerable) | Recall@5 | Recall@10 | Recall@20 |
+| --- | ---: | ---: | ---: |
+| BM25 (003) | 0.54 | 0.70 | 0.86 |
+| BM25 + stopwords, 007 list | 0.50 | 0.76 | 0.87 |
+| BM25 + stopwords, revised list | 0.50 | 0.76 | 0.87 |
+| Hybrid (003, the default) | **0.65** | 0.79 | 0.92 |
+| Hybrid + stopwords, 007 list | 0.64 | 0.77 | 0.91 |
+| Hybrid + stopwords, revised list | 0.64 | 0.77 | 0.91 |
+
+- **Revised vs 007 list:** 0 wins and 0 losses at recall@5 for both BM25
+  and hybrid. Recall is identical at every depth. 3 of 100 top-20 rankings
+  changed order, without moving any evidence across a cutoff.
+- **Revised hybrid vs default hybrid:** 3 wins, 4 losses (p = 1.0), as in
+  007.
+
+### Reading
+
+- The dev set barely tests negation: only 3 of 120 questions contain
+  "not" or "no" ("Are the answers double (and not triple) annotated?",
+  "…robust to noise or not?", and a quoted "ROUGE is not much reliable").
+  So this run shows the revision does no harm here, not that it helps.
+- Keeping "not" as a separate token lets BM25 match a paragraph that also
+  says "not", but it does not know what "not" applies to: "Did they not
+  use pretraining?" still matches "we use pretraining" on "use" and
+  "pretraining". Handling that would need negation-scope analysis, which
+  is out of scope.
+
+### Decision
+
+- The setting stays **off by default**; `config/composed-hybrid.json` is
+  unchanged (D15, D16). The revised list is the one used whenever the
+  option is turned on.

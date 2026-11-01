@@ -425,6 +425,10 @@ decisions driven by results lives in [EXPERIMENTS.md](../EXPERIMENTS.md).
   unchanged and the result is attributable to the stopwords alone. The
   plural rule was not changed in the same experiment (it has its own known
   flaw, noted in EXPERIMENTS.md 003).
+- **Revised 2026-11-01:** "not" and "no" were removed from the list, since
+  negation can reverse a question's meaning. Retrieval was unchanged on
+  the dev set (EXPERIMENTS.md 007b: same recall at every depth), which has
+  only 3 questions with "not" or "no". Still off by default.
 
 ## D17: No per-paper cap for cross-paper retrieval
 
