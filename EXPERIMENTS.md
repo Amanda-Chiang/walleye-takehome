@@ -19,6 +19,14 @@ view" (`views.py`, `TextView`, config key `"view"`). It was renamed to
 `index_text.py`, `IndexText` and `"index_text"` on 2026-11-01, with no
 change in behavior.
 
+**Error reports regenerated (2026-11-01):** `tools/error_analysis.py` used
+to pool the evidence of every reference, so a question answered by one
+reference's paragraphs could still look partial, and its "Missed" list
+showed the other references' paragraphs. It now uses the best-matching
+reference, as `score.py` does. The reports for 001 and 005 were
+regenerated: outcome counts are unchanged, and each lost 2 "Missed" lines
+that belonged to another reference. Official metrics were never affected.
+
 **Outcome tags** (assigned mechanically by `tools/error_analysis.py`):
 
 | Tag | Meaning |

@@ -4,6 +4,10 @@ Reads the questions, gold, predictions and corpus of a run folder (the layout
 ``tools/run_eval.py`` writes) and tags each question with a mechanical
 outcome. Gold is read only here, after prediction, for analysis.
 
+When a question has several references, outcomes and missed evidence use
+the one whose evidence best matches the retrieved paragraphs, as
+``tools/score.py`` takes the best reference for evidence recall.
+
 Example::
 
     python tools/error_analysis.py --run-dir results/baseline-20 \\
@@ -18,8 +22,10 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from qasper_rag.storage.jsonl import read_jsonl
+from tools.retrieval_eval import best_reference
 
 Row = dict[str, Any]
 
@@ -35,9 +41,18 @@ def setup_args() -> argparse.ArgumentParser:
     return parser
 
 
-def gold_evidence(references: list[Row]) -> set[str]:
-    """Return the union of evidence paragraph IDs over all references."""
-    return {pid for ref in references for pid in ref["evidence_paragraph_ids"]}
+def best_evidence(retrieved: list[str], references: list[Row]) -> set[str]:
+    """Return the evidence of the reference that best matches ``retrieved``.
+
+    Uses ``best_reference`` from ``tools/retrieval_eval.py``, so a question
+    whose references cite different paragraphs is judged against the one it
+    matched. Abstention references have no evidence, so they give an empty
+    set.
+    """
+    evidence_sets = [ref["evidence_paragraph_ids"] for ref in references]
+    if not all(evidence_sets):
+        return set()
+    return set(evidence_sets[best_reference(retrieved, evidence_sets)])
 
 
 def outcome(prediction: Row, references: list[Row]) -> str:
@@ -58,8 +73,9 @@ def outcome(prediction: Row, references: list[Row]) -> str:
     """
     if all(ref["abstain"] for ref in references):
         return "correct_abstain" if prediction["abstain"] else "missed_abstain"
-    evidence = gold_evidence(references)
-    hits = evidence & set(prediction["retrieved_paragraph_ids"])
+    retrieved = prediction["retrieved_paragraph_ids"]
+    evidence = best_evidence(retrieved, references)
+    hits = evidence & set(retrieved)
     if not hits:
         return "retrieval_miss"
     if prediction["abstain"]:
@@ -77,8 +93,8 @@ def question_section(
 ) -> list[str]:
     """Render the markdown block for one question."""
     refs = gold["references"]
-    evidence = gold_evidence(refs)
     retrieved = prediction["retrieved_paragraph_ids"]
+    evidence = best_evidence(retrieved, refs)
     lines = [
         f"### Q{index} `{question['paper_id']}`: {outcome(prediction, refs)}",
         "",
@@ -90,7 +106,8 @@ def question_section(
     lines.append(
         f"- **Retrieved:** {[short(p) for p in retrieved]}; "
         f"**cited:** {cited}; "
-        f"**gold evidence:** {sorted(short(p) for p in evidence)}"
+        f"**gold evidence (best of {len(refs)} references):** "
+        f"{sorted(short(p) for p in evidence)}"
     )
     for pid in sorted(evidence - set(retrieved)):
         para = corpus.get(pid, {})

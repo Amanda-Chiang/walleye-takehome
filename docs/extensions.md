@@ -116,8 +116,9 @@ the same `--index-dir`: only new text gets embedded.
 | `tests/test_composed_retriever.py` | Tests for the parts, scope, `top_k`, chunk rollup, reranking, index-time caching, and parity with the starter retriever |
 | `data/eval-120/` | 120 dev questions (100 answerable, 20 unanswerable, 94 papers) and gold, made with `tools/prepare_data.py --count 120 --abstentions 20`. A superset of the shipped 20. Used for retrieval evaluation (D6). Gold is for scoring only |
 | `tools/retrieval_eval.py` | Retrieval-only evaluation for any retriever config: recall@5/10/20 (best reference per depth, as `score.py`), each question's top-20 ranking, and the paragraphs of its best-matching reference (chosen at recall@5) that the top 5 missed, with rank and section. Reads gold only after retrieval. No answer-model calls |
+| `tests/test_error_analysis.py` | Tests outcome tags and missed evidence when references cite different paragraphs |
 | `tests/test_retrieval_eval.py` | Tests for recall, best-reference choice and ties, missed paragraphs, the command on fixtures, and top-k prefix consistency (`retrieve(q, 20)[:5] == retrieve(q, 5)`) for the composed and starter retrievers |
-| `tools/error_analysis.py` | Tags each question in a scored run (`retrieval_miss`, `missed_abstain`, ...) and writes a markdown report. Reads gold, so use it only after prediction |
+| `tools/error_analysis.py` | Tags each question in a scored run (`retrieval_miss`, `missed_abstain`, ...) and writes a markdown report. With several references it judges against the best-matching one (`best_reference` from `retrieval_eval.py`), as `score.py` does for recall. Reads gold, so use it only after prediction |
 | `EXPERIMENTS.md` | Running log of commands, metrics, failure analysis and decisions |
 | `experiments/runs/` | Per-question error reports and metrics for each logged run |
 | `docs/decisions.md` | Architecture decision log |
