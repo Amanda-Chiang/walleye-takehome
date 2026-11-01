@@ -14,12 +14,13 @@ TOKEN = re.compile(r"[a-z0-9]+")
 
 # Function words and question words. Questions are short and mostly made of
 # these, and a paragraph matching only them earned a top BM25 rank
-# (EXPERIMENTS.md 003).
+# (EXPERIMENTS.md 003). Words that change a question's meaning ("not",
+# "no", "never", "without", "only", "except", "unless") are kept.
 STOPWORD_TEXT = (
     "a an and are as at be been but by can could did do does for from had "
-    "has have how i if in into is it its no not of on or our such than "
-    "that the their them then there these they this those to was we were "
-    "what when where which while who whom why will with would"
+    "has have how i if in into is it its of on or our such than that the "
+    "their them then there these they this those to was we were what when "
+    "where which while who whom why will with would"
 )
 STOPWORDS = frozenset(STOPWORD_TEXT.split())
 

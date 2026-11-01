@@ -44,6 +44,16 @@ class TokenizeTests(unittest.TestCase):
     def test_keeps_short_words_and_double_s(self):
         self.assertEqual(tokenize("is class gas"), ["is", "class", "gas"])
 
+    def test_keeps_words_that_change_meaning(self):
+        question = "Is it not trained without labels, only English, no data?"
+        self.assertEqual(tokenize(question, STOPWORDS),
+                         ["not", "trained", "without", "label", "only", "english", "no", "data"])
+        for word in ("not", "no", "never", "without", "only", "except", "unless"):
+            self.assertNotIn(word, STOPWORDS)
+
+    def test_default_keeps_every_word(self):
+        self.assertEqual(tokenize("Is it not the model?"), ["is", "it", "not", "the", "model"])
+
     def test_drops_stopwords_before_the_plural_rule(self):
         # "this" and "does" are stopwords, not "thi" and "doe".
         self.assertEqual(tokenize("Does this model use baselines?", STOPWORDS),
@@ -77,6 +87,11 @@ class BM25ScoreTests(unittest.TestCase):
 
     def test_stopwords_are_off_by_default(self):
         self.assertEqual(BM25Scorer({}, "unused").stopwords, frozenset())
+
+    def test_negation_still_matches_with_stopwords_on(self):
+        texts = ("we do not use pretraining", "we use pretraining")
+        scores = fitted(*texts, stopwords=True).score("Did they not use it?", [0, 1])
+        self.assertGreater(scores[0], scores[1])
 
     def test_scores_exactly_the_requested_candidates(self):
         scorer = fitted("a b", "b c", "c d")
