@@ -119,6 +119,9 @@ the same `--index-dir`: only new text gets embedded.
 | `tools/retrieval_eval.py` | Retrieval-only evaluation for any retriever config: recall@5/10/20 (best reference per depth, as `score.py`), each question's top-20 ranking, and the paragraphs of its best-matching reference (chosen at recall@5) that the top 5 missed, with rank and section. Reads gold only after retrieval. No answer-model calls |
 | `tests/test_error_analysis.py` | Tests outcome tags and missed evidence when references cite different paragraphs |
 | `tests/test_retrieval_eval.py` | Tests for recall, best-reference choice and ties, missed paragraphs, the command on fixtures, and top-k prefix consistency (`retrieve(q, 20)[:5] == retrieve(q, 5)`) for the composed and starter retrievers |
+| `tools/cross_paper_compare.py` | Retrieval-only comparison across all papers: plain top 5 vs the same ranking with at most N passages per paper. Writes each selected passage for reading; there is no cross-paper gold. Not part of the agent (EXPERIMENTS.md 008) |
+| `tests/test_cross_paper_compare.py` | Tests the per-paper selection |
+| `data/cross-paper/questions.jsonl` | 10 broad questions with no paper ID ("Which papers…"), written by us from corpus topic counts. No gold |
 | `tools/error_analysis.py` | Tags each question in a scored run (`retrieval_miss`, `missed_abstain`, ...) and writes a markdown report. With several references it judges against the best-matching one (`best_reference` from `retrieval_eval.py`), as `score.py` does for recall. Reads gold, so use it only after prediction |
 | `EXPERIMENTS.md` | Running log of commands, metrics, failure analysis and decisions |
 | `experiments/runs/` | Per-question error reports and metrics for each logged run |
