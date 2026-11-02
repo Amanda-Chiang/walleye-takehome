@@ -22,7 +22,7 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["qasper_rag*"]
+include = ["qasper_rag*", "qasper_agent*"]
 
 [tool.setuptools.package-data]
 qasper_rag = ["web/static/*.html"]

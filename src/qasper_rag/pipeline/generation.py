@@ -44,12 +44,49 @@ PROMPT = (
     "(boolean), and citations (list of objects containing only paragraph_id "
     "and quote). Cite only passages that support the answer. Quotes must be "
     "nonempty exact substrings of their paragraphs; use each ID at most once. "
-    "If the evidence is insufficient, return "
+    "If the passages do not answer the question as asked, return "
     '{"answer":"Unanswerable","abstain":true,"citations":[]}. '
-    "For yes/no questions answer Yes or No. Keep other answers concise. If "
-    "passages come from several papers, state which paper_id each claim "
+    "Abstain instead of hedging: if your answer would have to say that the "
+    "passages do not state, specify or establish something the question "
+    "asks, abstain. Do not answer a related question instead. "
+    "For yes/no questions the answer is exactly Yes or No, with nothing "
+    "after it. For other questions give the shortest complete answer: a "
+    "name, number or short phrase rather than a sentence when that is "
+    "enough. The citations carry the support, so do not restate it. "
+)
+
+# Only cross-paper questions should name papers (ASSIGNMENT.md, "Across
+# papers"). Telling a one-paper question about paper IDs made the model add
+# "Paper 1705.01265 reports ..." to plain answers.
+SEVERAL_PAPERS_RULE = (
+    "The question covers several papers: state which paper_id each claim "
     "comes from.\n"
 )
+ONE_PAPER_RULE = "The question covers one paper: do not mention its paper_id.\n"
+
+
+def build_prompt(question: dict[str, Any], passages: list[Passage]) -> str:
+    """Return the full user message for one question.
+
+    Parameters
+    ----------
+    question : dict
+        Holds ``question`` (the text) and, from the service, ``paper_ids``
+        (the papers in scope). Without ``paper_ids``, the passages' papers
+        are the scope.
+    passages : list[dict]
+        The retrieved passages, best first.
+
+    Returns
+    -------
+    str
+        The instructions, the paper rule for the scope, then the question
+        and passages as JSON.
+    """
+    papers = question.get("paper_ids") or [p["paper_id"] for p in passages]
+    rule = SEVERAL_PAPERS_RULE if len(set(papers)) > 1 else ONE_PAPER_RULE
+    data = {"question": question["question"], "passages": passages}
+    return PROMPT + rule + json.dumps(data)
 
 
 def build_payload(
@@ -125,8 +162,7 @@ class ChatGenerator:
         """
         if not passages:
             return dict(ABSTAIN_OUTPUT)
-        data = {"question": question["question"], "passages": passages}
-        prompt = PROMPT + json.dumps(data)
+        prompt = build_prompt(question, passages)
         payload = build_payload(self.client.model, self.config, prompt)
         response = self.client.post("/chat/completions", payload)
         return json.loads(response["choices"][0]["message"]["content"])

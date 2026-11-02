@@ -1,0 +1,10 @@
+{"question_id": "cross-01", "question": "Which papers use pre-trained GloVe embeddings, and for what?"}
+{"question_id": "cross-02", "question": "Which papers study sarcasm detection, and what data do they use?"}
+{"question_id": "cross-03", "question": "Which papers evaluate on XNLI?"}
+{"question_id": "cross-04", "question": "Which papers address hate speech detection?"}
+{"question_id": "cross-05", "question": "Which papers study code-switching?"}
+{"question_id": "cross-06", "question": "Which papers work on fake news detection?"}
+{"question_id": "cross-07", "question": "Which papers collect annotations with Amazon Mechanical Turk?"}
+{"question_id": "cross-08", "question": "Which papers evaluate summaries with ROUGE?"}
+{"question_id": "cross-09", "question": "Which papers use ELMo embeddings?"}
+{"question_id": "cross-10", "question": "Which papers use CrowdFlower to annotate data?"}
